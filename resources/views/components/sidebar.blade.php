@@ -1,7 +1,7 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="index.html">RESTO BAHRI</a>
+            <a href="index.html">Pinagut Food Estate</a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
             <a href="index.html">RB</a>
@@ -23,18 +23,17 @@
 
                 </ul>
 
-                {{-- <ul class="dropdown-menu">
+                <ul class="dropdown-menu">
                     <li class=''>
                         <a class="nav-link" href="{{ route('products.index') }}">Products</a>
                     </li>
-
                 </ul>
 
                 <ul class="dropdown-menu">
                     <li class=''>
                         <a class="nav-link" href="{{ route('categories.index') }}">Categories</a>
                     </li>
-                </ul> --}}
+                </ul>
 
             </li>
 
