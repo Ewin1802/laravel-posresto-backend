@@ -21,7 +21,7 @@ class CategoryFactory extends Factory
         //     'description' => $this->faker->text,
         //     'image' => $this->faker->imageUrl(),
         // ];
-        $foods = ['Khas Bolmut', 'Turki Food', 'Israel Food', 'Jerman Food', 'Steak Arab','Salad Australia'];
+        $foods = ['Makanan', 'Minuman', 'Snack', 'Racun',];
 
         return [
             'name' => $this->faker->randomElement($foods), // Pilih nama makanan acak

@@ -16,7 +16,7 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $foods = ['Pizza Bolmut', 'Putu Anti Manganto', 'Daging Cincang', 'Pala-Pala Ayam Kampus', 'Mocktail Sonuo','Cocktail Bolbar', 'Panada Jerman', 'Mie Afghanistan'];
+        $foods = ['Pizza Bolmut', 'Putu Anti Manganto', 'Goroho Bla Dada', 'Pala-Pala Ayam Kampus', 'Mocktail Sonuo','Cocktail Bolbar', 'Panada Jerman', 'Mie Afghanistan'];
         return [
             'name' =>  $this->faker->randomElement($foods),
             'description' => $this->faker->text,
