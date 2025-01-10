@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
         name="viewport">
-    <title>@yield('title') &mdash; Stisla</title>
+    <title>@yield('title') &mdash; Resto ARCH</title>
     {{-- Favicon - Logo web disamping title --}}
     <link rel="icon" href="{{ asset('img/logo_pemda.png') }}" type="image/png">
 
