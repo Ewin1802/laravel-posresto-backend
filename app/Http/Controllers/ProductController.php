@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     // index
-    public function index(Request $request)
+    public function index()
     {
-        $products = Product::with('category') // Eager load relasi category
-        ->when($request->input('name'), function ($query, $name) {
-            $query->where('name', 'like', '%' . $name . '%');
-        })
-        ->paginate(10);
-        // $products = Product::paginate(10);
+        $products = Product::paginate(10);
         return view('pages.products.index', compact('products'));
     }
 

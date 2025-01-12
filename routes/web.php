@@ -29,4 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('categories', CategoryController::class);
 
+    //post update products
+    Route::post('products/update/{id}', [ProductController::class, 'update'])->name('products.newupdate');
+    
 });

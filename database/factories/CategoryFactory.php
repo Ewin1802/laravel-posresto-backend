@@ -16,16 +16,9 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        // return [
-        //     'name' => $this->faker->name,
-        //     'description' => $this->faker->text,
-        //     'image' => $this->faker->imageUrl(),
-        // ];
-        $foods = ['Makanan', 'Minuman', 'Snack', 'Racun',];
-
         return [
-            'name' => $this->faker->randomElement($foods), // Pilih nama makanan acak
-            'description' => $this->faker->sentence,
+            'name' => $this->faker->name,
+            'description' => $this->faker->text,
             'image' => $this->faker->imageUrl(),
         ];
     }
