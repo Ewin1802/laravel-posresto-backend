@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'General Dashboard')
+@section('title', 'Welcome')
 {{-- Favicon - Logo web disamping title --}}
 <link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 @push('style')
@@ -13,7 +13,7 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Dashboard - ARCH Cashier</h1>
+                <h1>Dashboard - ARCH Manajemen</h1>
             </div>
             <div class="row">
 
@@ -23,7 +23,7 @@
                             <h4>Welcome to the Dashboard</h4>
                         </div>
                         <div class="card-body">
-                            <p>Selamat datang di dashboard ARCH Cashier. Silahkan gunakan menu di samping untuk mengakses
+                            <p>Selamat datang di dashboard ARCH Manajemen. Silahkan gunakan menu di samping untuk mengakses
                                 fitur-fitur yang tersedia.</p>
                         </div>
                     </div>

@@ -2419,7 +2419,8 @@ body {
 }
 
 .body-auth {
-    background: linear-gradient(135deg, #6777ef, #f5f8f7);
+    /* background: linear-gradient(135deg, #6777ef, #f5f8f7); */
+    background: linear-gradient(135deg, #800000, #00a868)!important;
     font-size: 14px;
     font-weight: 400;
     font-family: "Nunito", "Segoe UI", arial;
