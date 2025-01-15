@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Edit Product')
-
+{{-- Favicon - Logo web disamping title --}}
+<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 @push('style')
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('library/bootstrap-daterangepicker/daterangepicker.css') }}">
@@ -63,7 +64,7 @@
                                     </div>
                                 @enderror
                             </div>
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <label>Price</label>
                                 <input type="number"
                                     class="form-control @error('price')
@@ -75,7 +76,29 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
+                            </div> --}}
+
+                            <div class="form-group">
+                                <label>Price</label>
+                                <!-- Input untuk tampilan harga dengan format ribuan -->
+                                <input type="text" id="price_display"
+                                       class="form-control @error('price') is-invalid @enderror"
+                                       value="{{ number_format($product->price, 0, ',', '.') }}"
+                                       oninput="formatPrice(this)"
+                                       placeholder="Enter price">
+
+                                <!-- Hidden input untuk nilai asli tanpa format -->
+                                <input type="hidden" id="price_input" name="price" value="{{ $product->price }}">
+
+                                @error('price')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
+
+
+
                             <div class="form-group">
                                 <label>Stock</label>
                                 <input type="number"
@@ -160,4 +183,32 @@
 @endsection
 
 @push('scripts')
+<script>
+    function formatPrice(input) {
+        // Ambil nilai asli tanpa karakter non-digit
+        let value = input.value.replace(/[^0-9]/g, '');
+
+        // Format nilai dengan pemisah ribuan
+        let formatted = new Intl.NumberFormat('id-ID').format(value);
+
+        // Update tampilan input dengan nilai yang diformat
+        input.value = formatted;
+
+        // Simpan nilai asli (tanpa pemisah ribuan) ke hidden input
+        document.getElementById('price_input').value = value;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ambil elemen input display dan input hidden
+        const priceDisplay = document.getElementById('price_display');
+        const priceInput = document.getElementById('price_input');
+
+        // Jika ada nilai di hidden input, format ulang tampilan
+        if (priceInput.value) {
+            priceDisplay.value = new Intl.NumberFormat('id-ID').format(priceInput.value);
+        }
+    });
+</script>
+
+
 @endpush

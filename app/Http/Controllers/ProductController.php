@@ -9,9 +9,28 @@ use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
     // index
-    public function index()
+    // public function index()
+    // {
+    //     $products = Product::paginate(10);
+    //     return view('pages.products.index', compact('products'));
+    // }
+    public function index(Request $request)
     {
-        $products = Product::paginate(10);
+        //get all users with pagination
+        // $products = DB::table('products')
+        //     ->when($request->input('name'), function ($query, $name) {
+        //         $query->where('name', 'like', '%' . $name . '%');
+        //     })
+        //     ->paginate(10);
+        // return view('pages.products.index', compact('products'));
+        $products = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.id') // Join ke tabel categories
+            ->select('products.*', 'categories.name as category_name') // Pilih kolom yang diperlukan
+            ->when($request->input('name'), function ($query, $name) {
+                $query->where('products.name', 'like', '%' . $name . '%'); // Filter berdasarkan nama produk
+            })
+            ->paginate(10);
+
         return view('pages.products.index', compact('products'));
     }
 

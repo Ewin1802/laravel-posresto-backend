@@ -1,3 +1,3 @@
   <div class="simple-footer">
-      Copyright &copy; EwinLantapa 2025
+    Copyright &copy; 2025 <div class="bullet"></div> Design By <a href="https://www.instagram.com/ewin.lntp/">Ewin Lantapa</a>
   </div>

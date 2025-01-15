@@ -84,11 +84,30 @@ class CategoryController extends Controller
     }
 
     //destroy
+    // public function destroy($id)
+    // {
+    //     //delete the request...
+    //     $category = Category::find($id);
+    //     $category->delete();
+    //     return redirect()->route('categories.index')->with('success', 'Category deleted successfully');
+    // }
     public function destroy($id)
     {
-        //delete the request...
-        $category = Category::find($id);
-        $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully');
+        try {
+            // Cari kategori berdasarkan ID
+            $category = Category::findOrFail($id);
+
+            // Hapus kategori
+            $category->delete();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+        } catch (QueryException $e) {
+            // Tangkap error (misalnya, foreign key constraint)
+            return redirect()->route('categories.index')->with('error', 'Cannot delete this category. It is linked to other data.');
+        } catch (\Exception $e) {
+            // Tangkap error lainnya
+            return redirect()->route('categories.index')->with('error', 'An unexpected error occurred. Please try again later.');
+        }
     }
 }

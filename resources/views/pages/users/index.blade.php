@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Users')
-
+{{-- Favicon - Logo web disamping title --}}
+<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 @push('style')
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
@@ -40,14 +41,14 @@
                                 <h4>All Posts</h4>
                             </div>
                             <div class="card-body">
-                                <div class="float-left">
+                                {{-- <div class="float-left">
                                     <select class="form-control selectric">
                                         <option>Action For Selected</option>
                                         <option>Move to Draft</option>
                                         <option>Move to Pending</option>
                                         <option>Delete Pemanently</option>
                                     </select>
-                                </div>
+                                </div> --}}
                                 <div class="float-right">
                                     <form method="GET" action="{{ route('users.index') }}">
                                         <div class="input-group">
@@ -84,7 +85,7 @@
                                                 </td>
                                                 <td>{{ $user->created_at }}</td>
                                                 <td>
-                                                    <div class="d-flex justify-content-center">
+                                                    {{-- <div class="d-flex justify-content-center">
                                                         <a href='{{ route('users.edit', $user->id) }}'
                                                             class="btn btn-sm btn-info btn-icon">
                                                             <i class="fas fa-edit"></i>
@@ -100,7 +101,23 @@
                                                                 <i class="fas fa-times"></i> Delete
                                                             </button>
                                                         </form>
+                                                    </div> --}}
+                                                    <div class="d-flex justify-content-center">
+                                                        <a href='{{ route('users.edit', $user->id) }}'
+                                                            class="btn btn-sm btn-info btn-icon">
+                                                            <i class="fas fa-edit"></i>
+                                                            Edit
+                                                        </a>
+
+                                                        <form action="{{ route('users.destroy', $user->id) }} " method="POST" class="ml-2">
+                                                            <input type="hidden" name="_method" value="DELETE" />
+                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                                                            <button class="btn btn-sm btn-danger btn-icon" onclick="return confirm('Butul mo hapus ini data?')">
+                                                                <i class="fas fa-times"></i> Delete
+                                                            </button>
+                                                        </form>
                                                     </div>
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -126,4 +143,17 @@
 
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/features-posts.js') }}"></script>
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.confirm-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (event) {
+                    const confirmed = confirm('Yakin mo hapus ini orang?');
+                    if (!confirmed) {
+                        event.preventDefault(); // Membatalkan aksi penghapusan jika user memilih "Cancel"
+                    }
+                });
+            });
+        });
+    </script> --}}
 @endpush

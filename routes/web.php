@@ -25,11 +25,19 @@ Route::middleware(['auth'])->group(function () {
         return view('pages.dashboard');
     })->name('home');
 
-    Route::resource('users', UserController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('categories', CategoryController::class);
+    // Route::middleware(['auth', 'role:staff'])->group(function () {
 
-    //post update products
-    Route::post('products/update/{id}', [ProductController::class, 'update'])->name('products.newupdate');
-    
+    // });
+
+    Route::middleware(['auth', 'role:admin'])->group(function () {
+        Route::resource('users', UserController::class);
+        Route::resource('products', ProductController::class);
+        Route::resource('categories', CategoryController::class);
+
+        //post update products
+        Route::post('products/update/{id}', [ProductController::class, 'update'])->name('products.newupdate');
+    });
+
+
+
 });

@@ -14,10 +14,10 @@
     <ul class="navbar-nav navbar-right">
         <li class="dropdown">
             <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                <img alt="image" src="{{ asset('img/logo_pemda.png') }}" class="mr-2 logo-pemda">
+                <img alt="image" src="{{ asset('img/logo_arch_web.png') }}" class="mr-2 logo-arch">
                 <div class="user-info">
-                    <div class="kab-info">Pinagut Food Estate</div>
-                    <div class="user-name">{{ auth()->user()->name }}</div>
+                    <div class="arch-info">ARCH Manajemen</div>
+                    <div class="user-name">User : {{ auth()->user()->name }}</div>
                 </div>
             </a>
             <div class="dropdown-menu dropdown-menu-right">

@@ -1,7 +1,8 @@
 @extends('layouts.auth')
 
-@section('title', 'Register Pura-Pura')
-
+@section('title', 'Register Kasir ARSCH')
+{{-- Favicon - Logo web disamping title --}}
+<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 @push('style')
     <!-- CSS Libraries -->
     <link rel="stylesheet"

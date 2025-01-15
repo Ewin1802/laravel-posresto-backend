@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Categories')
-
+{{-- Favicon - Logo web disamping title --}}
+<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 @push('style')
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
@@ -55,7 +56,6 @@
                                         <tr>
 
                                             <th>Name</th>
-
                                             <th>Create At</th>
                                             <th>Action</th>
                                         </tr>
@@ -109,4 +109,18 @@
 
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/features-posts.js') }}"></script>
+    {{-- confirm delete --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.confirm-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function (event) {
+                    const confirmed = confirm('Are you sure you want to delete this category?');
+                    if (!confirmed) {
+                        event.preventDefault(); // Membatalkan aksi penghapusan jika user memilih "Cancel"
+                    }
+                });
+            });
+        });
+    </script>
 @endpush

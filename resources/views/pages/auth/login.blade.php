@@ -6,13 +6,25 @@
     <!-- CSS Libraries -->
     <link rel="stylesheet"
         href="{{ asset('library/bootstrap-social/bootstrap-social.css') }}">
+    {{-- Favicon - Logo web disamping title --}}
+<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 @endpush
 
 @section('main')
     <div class="card card-primary">
+
+
         <div class="card-header">
             <h4>Login</h4>
         </div>
+        {{-- <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="text-right">Login</h4>
+            <!-- Section for the logos, they will be side by side -->
+            <div class="d-flex align-items-center">
+                <!-- Logo BPKPD -->
+                <img src="{{ asset('img/logo_arch_web.png') }}" style="height: 50px;">
+            </div>
+        </div> --}}
 
         <div class="card-body">
             <form method="POST"
@@ -72,9 +84,9 @@
 
         </div>
     </div>
-    <div class="text-muted mt-5 text-center">
+    {{-- <div class="text-muted mt-5 text-center">
         Don't have an account? <a href="{{route('register')}}">Create One</a>
-    </div>
+    </div> --}}
 @endsection
 
 @push('scripts')

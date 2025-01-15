@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
         name="viewport">
-    <title>@yield('title') &mdash; Resto ARCH</title>
+    <title>@yield('title') &mdash; ARCH Manajemen</title>
     {{-- Favicon - Logo web disamping title --}}
-    <link rel="icon" href="{{ asset('img/logo_pemda.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 
     <!-- General CSS Files -->
     <link rel="stylesheet"
