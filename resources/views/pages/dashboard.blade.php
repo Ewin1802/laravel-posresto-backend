@@ -28,7 +28,7 @@
                         <div class="card-body">
                             <p>Selamat datang di dashboard ARCH Manajemen. Silahkan gunakan menu di samping untuk mengakses
                                 fitur-fitur yang tersedia.</p>
-                                <p>Website ini menggunakan Layanan Cloud Server yang dibayar per Tahun sebesar Rp.1.000.000,-.</p>
+                                <p>Diinformasikan kepada Owner, Website ini menggunakan Layanan Cloud Server yang dibayar per Tahun sebesar Rp.1.000.000,-. Disarankan untuk membayar kewajiban tersebut setiap tahun sebelum tanggal pembayaran, agar data penjualan tidak hilang. Terima Kasih.</p>
                         </div>
                     </div>
                 </div>
