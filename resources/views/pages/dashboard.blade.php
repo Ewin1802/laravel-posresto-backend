@@ -20,11 +20,15 @@
                 <div class="col-12 col md-12 col-lg-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4>Welcome to the Dashboard</h4>
+                            <h4>
+                                <i class="fas fa-lightbulb text-dark"></i> <!-- Icon lampu menyala -->
+                                Welcome to the Dashboard
+                            </h4>
                         </div>
                         <div class="card-body">
                             <p>Selamat datang di dashboard ARCH Manajemen. Silahkan gunakan menu di samping untuk mengakses
                                 fitur-fitur yang tersedia.</p>
+                                <p>Website ini menggunakan Layanan Cloud Server yang dibayar per Tahun sebesar Rp.1.000.000,-.</p>
                         </div>
                     </div>
                 </div>

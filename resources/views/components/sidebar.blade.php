@@ -30,6 +30,11 @@
                         <i class="fas fa-fire"></i><span>Category</span>
                     </a>
                 </li>
+                <li class="nav-item {{ Request::is('order*') ? 'active' : '' }}">
+                    <a href="{{ route('order_reports.index') }}" class="nav-link">
+                        <i class="fas fa-fire"></i><span>Order Report</span>
+                    </a>
+                </li>
                 {{-- <ul class="dropdown-menu">
                     <li class=''>
                         <a class="nav-link" href="{{ route('users.index') }}">Users</a>

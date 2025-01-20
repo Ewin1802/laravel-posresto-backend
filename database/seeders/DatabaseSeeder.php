@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             CategorySeeder::class,
-            ProductSeeder::class,
-            DiscountSeeder::class,
+            // ProductSeeder::class,
+            // DiscountSeeder::class,
         ]);
     }
 }
