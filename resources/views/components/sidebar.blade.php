@@ -30,6 +30,11 @@
                         <i class="fas fa-fire"></i><span>Category</span>
                     </a>
                 </li>
+                <li class="nav-item {{ Request::is('discounts*') ? 'active' : '' }}">
+                    <a href="{{ route('discounts.index') }}" class="nav-link">
+                        <i class="fas fa-fire"></i><span>Discount</span>
+                    </a>
+                </li>
                 <li class="nav-item {{ Request::is('order*') ? 'active' : '' }}">
                     <a href="{{ route('order_reports.index') }}" class="nav-link">
                         <i class="fas fa-fire"></i><span>Order Report</span>

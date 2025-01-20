@@ -14,9 +14,15 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             ['name' => 'Makanan'],
-            ['name' => 'Minuman'],
-            ['name' => 'Snack'],
-            ['name' => 'Racun'],
+            ['name' => 'Bestseller'],
+            ['name' => 'Regalseries'],
+            ['name' => 'Noncoffee'],
+            ['name' => 'Americanoseries'],
+            ['name' => 'Latteseries'],
+            ['name' => 'Teaseries'],
+            ['name' => 'Hotseries'],
+            ['name' => 'Tradisionalseries'],
+            ['name' => 'Manualbrew'],
         ];
 
         foreach ($categories as $category) {
