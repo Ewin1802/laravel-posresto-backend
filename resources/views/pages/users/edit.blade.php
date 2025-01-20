@@ -88,11 +88,11 @@
                             <div class="form-group">
                                 <label class="form-label">Roles</label>
                                 <div class="selectgroup w-100">
-                                    <label class="selectgroup-item">
+                                    {{-- <label class="selectgroup-item">
                                         <input type="radio" name="role" value="admin" class="selectgroup-input"
                                             @if ($user->role == 'admin') checked @endif>
                                         <span class="selectgroup-button">Admin</span>
-                                    </label>
+                                    </label> --}}
                                     <label class="selectgroup-item">
                                         <input type="radio" name="role" value="staff" class="selectgroup-input"
                                             @if ($user->role == 'staff') checked @endif>

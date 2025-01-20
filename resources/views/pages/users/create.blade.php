@@ -87,11 +87,11 @@
                             <div class="form-group">
                                 <label class="form-label">Role</label>
                                 <div class="selectgroup w-100">
-                                    <label class="selectgroup-item">
+                                    {{-- <label class="selectgroup-item">
                                         <input type="radio" name="role" value="admin" class="selectgroup-input"
                                             checked="">
                                         <span class="selectgroup-button">Admin</span>
-                                    </label>
+                                    </label> --}}
                                     <label class="selectgroup-item">
                                         <input type="radio" name="role" value="staff" class="selectgroup-input">
                                         <span class="selectgroup-button">Staff</span>
