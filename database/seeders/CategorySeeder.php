@@ -23,6 +23,7 @@ class CategorySeeder extends Seeder
             ['name' => 'Hotseries'],
             ['name' => 'Tradisionalseries'],
             ['name' => 'Manualbrew'],
+            ['name' => 'Softdrink'],
         ];
 
         foreach ($categories as $category) {
