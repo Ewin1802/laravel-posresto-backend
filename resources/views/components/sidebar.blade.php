@@ -35,28 +35,13 @@
                         <i class="fas fa-fire"></i><span>Discount</span>
                     </a>
                 </li>
-                <li class="nav-item {{ Request::is('order*') ? 'active' : '' }}">
+                <li class="nav-item {{ Request::is('orde*') ? 'active' : '' }}">
                     <a href="{{ route('order_reports.index') }}" class="nav-link">
                         <i class="fas fa-fire"></i><span>Order Report</span>
                     </a>
                 </li>
-                {{-- <ul class="dropdown-menu">
-                    <li class=''>
-                        <a class="nav-link" href="{{ route('users.index') }}">Users</a>
-                    </li>
-                </ul>
 
-                <ul class="dropdown-menu">
-                    <li class=''>
-                        <a class="nav-link" href="{{ route('products.index') }}">Products</a>
-                    </li>
-                </ul>
 
-                <ul class="dropdown-menu">
-                    <li class=''>
-                        <a class="nav-link" href="{{ route('categories.index') }}">Categories</a>
-                    </li>
-                </ul> --}}
 
             </li>
 

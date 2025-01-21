@@ -37,6 +37,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('categories', CategoryController::class);
 
         Route::resource('discounts', DiscountController::class);
+
+        Route::resource('order', OrderController::class);
         Route::get('/order-reports', [OrderController::class, 'index'])->name('order_reports.index');
         //post update products
         Route::post('products/update/{id}', [ProductController::class, 'update'])->name('products.newupdate');
