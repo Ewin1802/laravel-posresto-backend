@@ -87,7 +87,7 @@
                         </div>
 
                         <!-- Orders Table -->
-                        <div class="card">
+                        {{-- <div class="card">
                             <div class="card-header">
                                 <h4>Orders List</h4>
                             </div>
@@ -129,7 +129,54 @@
                                     </div>
                                 @endif
                             </div>
+                        </div> --}}
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Orders List</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Order ID</th>
+                                                <th>Customer</th>
+                                                <th>Payment Amount</th>
+                                                <th>Discount</th>
+                                                <th>Tax</th>
+                                                <th>Service Charge</th>
+                                                <th>Subtotal</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="orders-tbody">
+                                            <!-- Orders will be loaded here dynamically -->
+                                            @foreach ($orders as $order)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $order->id }}</td>
+                                                    <td>{{ $order->customer_name }}</td>
+                                                    <td>{{ number_format($order->payment_amount, 2) }}</td>
+                                                    <td>{{ number_format($order->discount_amount, 2) }}</td>
+                                                    <td>{{ number_format($order->tax, 2) }}</td>
+                                                    <td>{{ number_format($order->service_charge, 2) }}</td>
+                                                    <td>{{ number_format($order->sub_total, 2) }}</td>
+                                                    <td>{{ $order->created_at->format('Y-m-d') }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if ($orders->hasMorePages())
+                                    <button id="load-more" class="btn btn-primary btn-block" data-next-page="{{ $orders->nextPageUrl() }}">
+                                        Load More
+                                    </button>
+                                @endif
+                            </div>
                         </div>
+
 
                         </div>
 
@@ -180,5 +227,65 @@
                 }
             }
         });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const loadMoreButton = document.getElementById('load-more');
+
+        if (loadMoreButton) {
+            loadMoreButton.addEventListener('click', function () {
+                const nextPageUrl = this.getAttribute('data-next-page');
+
+                if (nextPageUrl) {
+                    // Fetch data from the next page
+                    fetch(nextPageUrl, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Update the table with new data
+                            const tbody = document.getElementById('orders-tbody');
+                            data.data.forEach((order, index) => {
+                                const row = `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${order.id}</td>
+                                        <td>${order.customer_name || '-'}</td>
+                                        <td>${formatNumber(order.payment_amount)}</td>
+                                        <td>${formatNumber(order.discount_amount)}</td>
+                                        <td>${formatNumber(order.tax)}</td>
+                                        <td>${formatNumber(order.service_charge)}</td>
+                                        <td>${formatNumber(order.sub_total)}</td>
+                                        <td>${new Date(order.created_at).toISOString().split('T')[0]}</td>
+                                    </tr>
+                                `;
+                                tbody.innerHTML += row;
+                            });
+
+                            // Update the "Load More" button
+                            if (data.next_page_url) {
+                                loadMoreButton.setAttribute('data-next-page', data.next_page_url);
+                            } else {
+                                // If no more pages, remove the button
+                                loadMoreButton.remove();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading more orders:', error);
+                        });
+                }
+            });
+        }
+    });
+
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatNumber(num) {
+        return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+    }
+
+
     </script>
 @endpush

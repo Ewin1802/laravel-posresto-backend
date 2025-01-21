@@ -8,7 +8,7 @@ use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
-    
+
 
     public function index(Request $request)
     {
@@ -24,7 +24,15 @@ class OrderController extends Controller
             ]);
         }
 
-        $orders = $query->paginate(10); // Paginate orders
+        // $orders = $query->paginate(10); // Paginate orders
+
+        // Return paginated data for AJAX
+        if ($request->ajax()) {
+            return response()->json($query->paginate(10));
+        }
+        // Otherwise, return normal view for initial load
+        $orders = $query->paginate(10);
+
         $summary = [
             'total_revenue' => $query->sum('payment_amount'),
             'total_discount' => $query->sum('discount_amount'),
@@ -39,6 +47,31 @@ class OrderController extends Controller
 
         return view('pages.order_reports.index', compact('orders', 'summary', 'start_date', 'end_date'));
     }
+
+    // public function index(Request $request)
+    // {
+    //     $start_date = $request->input('start_date');
+    //     $end_date = $request->input('end_date');
+    //     $query = Order::query();
+
+    //     if ($start_date && $end_date) {
+    //         $query->whereBetween('created_at', [
+    //             $start_date . ' 00:00:00',
+    //             $end_date . ' 23:59:59'
+    //         ]);
+    //     }
+
+    //     // Return paginated data for AJAX
+    //     if ($request->ajax()) {
+    //         return response()->json($query->paginate(10));
+    //     }
+
+    //     // Otherwise, return normal view for initial load
+    //     $orders = $query->paginate(10);
+
+    //     return view('pages.order_reports.index', compact('orders', 'start_date', 'end_date'));
+    // }
+
 
 
 

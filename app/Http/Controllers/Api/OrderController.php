@@ -26,6 +26,7 @@ class OrderController extends Controller
             'id_kasir' => 'required',
             'nama_kasir' => 'required',
             'transaction_time' => 'required',
+            'customer_name' => 'nullable|string', // Customer name boleh kosong
             // 'order_items' => 'required'
         ]);
 
@@ -42,7 +43,8 @@ class OrderController extends Controller
             'total_item' => $request->total_item,
             'id_kasir' => $request->id_kasir,
             'nama_kasir' => $request->nama_kasir,
-            'transaction_time' => $request->transaction_time
+            'transaction_time' => $request->transaction_time,
+            'customer_name' => $request->customer_name ?? null, // Jika tidak ada, simpan null
         ]);
 
         //create order items
