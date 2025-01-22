@@ -17,27 +17,27 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Advanced Forms</h1>
+                <h1>Form Input Diskon</h1>
                 <div class="section-header-breadcrumb">
                     <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
                     <div class="breadcrumb-item"><a href="#">Forms</a></div>
-                    <div class="breadcrumb-item">Discount</div>
+                    <div class="breadcrumb-item">Form Input Diskon</div>
                 </div>
             </div>
 
             <div class="section-body">
-                <h2 class="section-title">Discount</h2>
+                <h2 class="section-title">Diskon</h2>
 
 
                 <div class="card">
                     <form action="{{ route('discounts.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="card-header">
-                            <h4>Input Text</h4>
+                            <h4>Isi Semua Form dibawah ini.</h4>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label>Name</label>
+                                <label>Nama Diskon</label>
                                 <input type="text"
                                     class="form-control @error('name')
                                 is-invalid
@@ -50,7 +50,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label>Description</label>
+                                <label>Deskripsi (berisi keterangan pemberian diskon)</label>
                                 <input type="text"
                                     class="form-control @error('description')
                                 is-invalid
@@ -65,7 +65,7 @@
 
 
                             <div class="form-group">
-                                <label>Value</label>
+                                <label>Value (Masukan angka diskon. Jika diisi 10, berarti diskon yang diberikan adalah 10%)</label>
                                 <input type="number"
                                     class="form-control @error('value')
                                 is-invalid

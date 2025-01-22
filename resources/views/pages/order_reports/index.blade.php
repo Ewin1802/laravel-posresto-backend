@@ -11,7 +11,7 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Order Report</h1>
+                <h1>Laporan Pesanan dan Keuangan (Semua Faedah Cek disini)</h1>
             </div>
 
             <div class="section-body">
@@ -26,7 +26,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Filter Orders</h4>
+                                <h4>Filter berdasarkan Tanggal</h4>
                             </div>
                             <div class="card-body">
                                 <form method="GET" action="{{ route('order_reports.index') }}">
@@ -47,7 +47,7 @@
                             <!-- Summary Section -->
                         <div class="card">
                             <div class="card-header">
-                                <h4>Order Summary</h4>
+                                <h4>Ringkasan</h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -62,7 +62,7 @@
                                                 <span>{{ number_format($summary['total_discount'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                Total Tax
+                                                Total Tax (PB1)
                                                 <span>{{ number_format($summary['total_tax'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -74,7 +74,7 @@
                                                 <span>{{ number_format($summary['total_service_charge'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                Total (Pendapatan Bersih)
+                                                Total (Faedah Bersih)
                                                 <span>{{ number_format($summary['total'], 2) }}</span>
                                             </li>
                                         </ul>
@@ -87,53 +87,11 @@
                         </div>
 
                         <!-- Orders Table -->
-                        {{-- <div class="card">
-                            <div class="card-header">
-                                <h4>Orders List</h4>
-                            </div>
-                            <div class="card-body">
-                                @if ($orders->isEmpty())
-                                    <p class="text-center">No orders found for the selected date range.</p>
-                                @else
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Order ID</th>
-                                                    <th>Customer</th>
-                                                    <th>Payment Amount</th>
-                                                    <th>Discount</th>
-                                                    <th>Tax</th>
-                                                    <th>Service Charge</th>
-                                                    <th>Subtotal</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($orders as $order)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $order->id }}</td>
-                                                        <td>{{ $order->customer_name }}</td>
-                                                        <td>{{ number_format($order->payment_amount, 2) }}</td>
-                                                        <td>{{ number_format($order->discount_amount, 2) }}</td>
-                                                        <td>{{ number_format($order->tax, 2) }}</td>
-                                                        <td>{{ number_format($order->service_charge, 2) }}</td>
-                                                        <td>{{ number_format($order->sub_total, 2) }}</td>
-                                                        <td>{{ $order->created_at->format('Y-m-d') }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @endif
-                            </div>
-                        </div> --}}
+
 
                         <div class="card">
                             <div class="card-header">
-                                <h4>Orders List</h4>
+                                <h4>Daftar Transaksi</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">

@@ -17,17 +17,16 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Advanced Forms</h1>
+                <h1>Form Input Produk</h1>
                 <div class="section-header-breadcrumb">
                     <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
                     <div class="breadcrumb-item"><a href="#">Forms</a></div>
-                    <div class="breadcrumb-item">Product</div>
+                    <div class="breadcrumb-item">Form Input Produk</div>
                 </div>
             </div>
 
             <div class="section-body">
-                <h2 class="section-title">Product</h2>
-
+                <h2 class="section-title">Produk</h2>
 
                 <div class="card">
                     <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
@@ -37,7 +36,7 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label>Name</label>
+                                <label>Nama Produk</label>
                                 <input type="text"
                                     class="form-control @error('name')
                                 is-invalid
@@ -50,7 +49,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label>Description</label>
+                                <label>Deskripsi Produk</label>
                                 <input type="text"
                                     class="form-control @error('description')
                                 is-invalid
@@ -62,21 +61,8 @@
                                     </div>
                                 @enderror
                             </div>
-                            {{-- <div class="form-group">
-                                <label>Price</label>
-                                <input type="number"
-                                    class="form-control @error('price')
-                                is-invalid
-                            @enderror"
-                                    name="price">
-                                @error('price')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div> --}}
                             <div class="form-group">
-                                <label>Price</label>
+                                <label>Harga</label>
                                 <input type="text" id="price_display" class="form-control @error('price') is-invalid @enderror" placeholder="Enter price" oninput="formatPrice(this)" />
                                 <input type="hidden" id="price_input" name="price"> {{-- Hidden input untuk nilai asli --}}
 
@@ -86,7 +72,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Stock</label>
+                                <label>Stok (Isi Angka Berapa saja, tidak berpengaruh di tabel lain) </label>
                                 <input type="number"
                                     class="form-control @error('stock')
                                 is-invalid
@@ -100,10 +86,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Category</label>
+                                <label class="form-label">Kategori Produk</label>
                                 <select class="form-control selectric @error('category_id') is-invalid @enderror"
                                     name="category_id">
-                                    <option value="">Choose Category</option>
+                                    <option value="">Pilih Kategori</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
@@ -111,10 +97,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Photo Product</label>
+                                <label class="form-label">Load Foto Produk</label>
                                 <div class="col-sm-9">
-                                    <input type="file" class="form-control" name="image"
-                                        @error('image') is-invalid @enderror>
+                                    <input type="file" class="form-control @error('image') is-invalid @enderror" name="image">
                                 </div>
                                 @error('image')
                                     <div class="invalid-feedback">
@@ -123,8 +108,9 @@
                                 @enderror
                             </div>
 
+
                             <div class="form-group">
-                                <label class="form-label">Status</label>
+                                <label class="form-label">Status (Tidak perlu diubah)</label>
                                 <div class="selectgroup selectgroup-pills">
                                     <label class="selectgroup-item">
                                         <input type="radio" name="status" value="1" class="selectgroup-input"
@@ -140,7 +126,7 @@
 
                             {{-- is favorite --}}
                             <div class="form-group">
-                                <label class="form-label">Is Favorite</label>
+                                <label class="form-label">Is Favorite (Tidak perlu diubah)</label>
                                 <div class="selectgroup selectgroup-pills">
                                     <label class="selectgroup-item">
                                         <input type="radio" name="is_favorite" value="1" class="selectgroup-input"
@@ -182,7 +168,47 @@
         // Simpan nilai asli (tanpa format) ke hidden input
         document.getElementById('price_input').value = value;
     }
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const requiredFields = ['name', 'description', 'price_input', 'stock', 'category_id'];
+        let isValid = true;
+
+        // Validasi input teks dan select
+        requiredFields.forEach(field => {
+            const input = document.querySelector(`[name="${field}"]`);
+            if (!input || !input.value.trim()) {
+                isValid = false;
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        // Validasi gambar
+        const imageInput = document.querySelector('[name="image"]');
+        if (!imageInput.files || imageInput.files.length === 0) {
+            event.preventDefault();
+            imageInput.classList.add('is-invalid');
+            alert('Please upload an image before submitting.');
+        } else {
+            imageInput.classList.remove('is-invalid');
+        }
+
+        // Validasi kategori (tidak boleh kosong)
+        const categorySelect = document.querySelector('[name="category_id"]');
+        if (categorySelect && categorySelect.value === '') {
+            isValid = false;
+            categorySelect.classList.add('is-invalid');
+        } else {
+            categorySelect.classList.remove('is-invalid');
+        }
+
+        // Jika tidak valid, cegah pengiriman form
+        if (!isValid) {
+            event.preventDefault();
+            alert('Please fill in all required fields, including the image, before submitting.');
+        }
+    });
 </script>
-
-
 @endpush
+

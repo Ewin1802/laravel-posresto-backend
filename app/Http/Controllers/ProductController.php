@@ -8,21 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    // index
-    // public function index()
-    // {
-    //     $products = Product::paginate(10);
-    //     return view('pages.products.index', compact('products'));
-    // }
     public function index(Request $request)
     {
-        //get all users with pagination
-        // $products = DB::table('products')
-        //     ->when($request->input('name'), function ($query, $name) {
-        //         $query->where('name', 'like', '%' . $name . '%');
-        //     })
-        //     ->paginate(10);
-        // return view('pages.products.index', compact('products'));
         $products = DB::table('products')
             ->join('categories', 'products.category_id', '=', 'categories.id') // Join ke tabel categories
             ->select('products.*', 'categories.name as category_name') // Pilih kolom yang diperlukan
@@ -41,10 +28,9 @@ class ProductController extends Controller
         return view('pages.products.create', compact('categories'));
     }
 
-    // store
     public function store(Request $request)
     {
-        // validate the request...
+        // Validasi dengan pesan error kustom
         $request->validate([
             'name' => 'required',
             'description' => 'required',
@@ -53,10 +39,24 @@ class ProductController extends Controller
             'stock' => 'required|numeric',
             'status' => 'required|boolean',
             'is_favorite' => 'required|boolean',
-
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'name.required' => 'The product name is required.',
+            'description.required' => 'The description is required.',
+            'price.required' => 'The price is required.',
+            'price.numeric' => 'The price must be a valid number.',
+            'category_id.required' => 'Please select a category.',
+            'stock.required' => 'The stock is required.',
+            'stock.numeric' => 'The stock must be a valid number.',
+            'status.required' => 'The product status is required.',
+            'is_favorite.required' => 'Please select if the product is a favorite.',
+            'image.required' => 'The product image is required.',
+            'image.image' => 'The file must be an image (jpeg, png, jpg).',
+            'image.mimes' => 'The image must be in jpeg, png, or jpg format.',
+            'image.max' => 'The image size must not exceed 2MB.',
         ]);
 
-        // store the request...
+        // Simpan data produk
         $product = new Product;
         $product->name = $request->name;
         $product->description = $request->description;
@@ -65,10 +65,9 @@ class ProductController extends Controller
         $product->stock = $request->stock;
         $product->status = $request->status;
         $product->is_favorite = $request->is_favorite;
-
         $product->save();
 
-        //save image
+        // Simpan gambar
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $image->storeAs('public/products', $product->id . '.' . $image->getClientOriginalExtension());
@@ -76,16 +75,15 @@ class ProductController extends Controller
             $product->save();
         }
 
-        return redirect()->route('products.index')->with('success', 'Product created successfully');
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
-    // show
+
     public function show($id)
     {
         return view('pages.products.show');
     }
 
-    // edit
     public function edit($id)
     {
         $product = Product::findOrFail($id);
@@ -93,10 +91,9 @@ class ProductController extends Controller
         return view('pages.products.edit', compact('product', 'categories'));
     }
 
-    // update
     public function update(Request $request, $id)
     {
-        // validate the request...
+        // Validasi termasuk gambar
         $request->validate([
             'name' => 'required',
             'description' => 'required',
@@ -105,10 +102,11 @@ class ProductController extends Controller
             'stock' => 'required|numeric',
             'status' => 'required|boolean',
             'is_favorite' => 'required|boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar opsional
         ]);
 
-        // update the request...
-        $product = Product::find($id);
+        // Update data produk
+        $product = Product::findOrFail($id);
         $product->name = $request->name;
         $product->description = $request->description;
         $product->price = $request->price;
@@ -118,7 +116,7 @@ class ProductController extends Controller
         $product->is_favorite = $request->is_favorite;
         $product->save();
 
-        //save image
+        // Simpan gambar jika ada
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $image->storeAs('public/products', $product->id . '.' . $image->getClientOriginalExtension());
