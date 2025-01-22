@@ -26,12 +26,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
 
 //logout api
-//kenapa pake midleware karena logout dipanggil harus dalam posisi login
+//harus pakai midleware karena logout dipanggil harus dalam posisi login
 Route::post('/logout', [App\Http\Controllers\Api\AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 //products api
 Route::get('/products', [App\Http\Controllers\Api\ProductController::class, 'index'])->middleware('auth:sanctum');
-Route::post('/products', [App\Http\Controllers\Api\ProductController::class, 'store'])->middleware('auth:sanctum');
+Route::post('/products/input', [App\Http\Controllers\Api\ProductController::class, 'store'])->middleware('auth:sanctum');
 Route::post('/products/edit', [App\Http\Controllers\Api\ProductController::class, 'update'])->middleware('auth:sanctum');
 Route::delete('/products/{id}', [App\Http\Controllers\Api\ProductController::class, 'destroy'])->middleware('auth:sanctum');
 //categories api
