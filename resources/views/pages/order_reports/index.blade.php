@@ -32,16 +32,17 @@
                                 <form method="GET" action="{{ route('order_reports.index') }}">
                                     <div class="form-row">
                                         <div class="col-md-5">
-                                            <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}" required>
+                                            <input type="date" name="start_date" class="form-control" value="{{ $start_date }}" required>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" required>
+                                            <input type="date" name="end_date" class="form-control" value="{{ $end_date }}" required>
                                         </div>
                                         <div class="col-md-2">
                                             <button type="submit" class="btn btn-primary">Filter</button>
                                         </div>
                                     </div>
                                 </form>
+
                             </div>
 
                             <!-- Summary Section -->
@@ -109,30 +110,37 @@
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="orders-tbody">
-                                            <!-- Orders will be loaded here dynamically -->
-                                            @foreach ($orders as $order)
+                                        <tbody>
+                                            @if ($orders->isEmpty())
                                                 <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $order->id }}</td>
-                                                    <td>{{ $order->customer_name }}</td>
-                                                    <td>{{ number_format($order->payment_amount, 2) }}</td>
-                                                    <td>{{ number_format($order->discount_amount, 2) }}</td>
-                                                    <td>{{ number_format($order->tax, 2) }}</td>
-                                                    <td>{{ number_format($order->service_charge, 2) }}</td>
-                                                    <td>{{ number_format($order->sub_total, 2) }}</td>
-                                                    <td>{{ $order->created_at->format('Y-m-d') }}</td>
+                                                    <td colspan="9" class="text-center">Tidak ada data transaksi ditemukan untuk rentang tanggal yang dipilih.</td>
                                                 </tr>
-                                            @endforeach
+                                            @else
+                                                @foreach ($orders as $order)
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $order->id }}</td>
+                                                        <td>{{ $order->customer_name }}</td>
+                                                        <td>{{ number_format($order->payment_amount, 2) }}</td>
+                                                        <td>{{ number_format($order->discount_amount, 2) }}</td>
+                                                        <td>{{ number_format($order->tax, 2) }}</td>
+                                                        <td>{{ number_format($order->service_charge, 2) }}</td>
+                                                        <td>{{ number_format($order->sub_total, 2) }}</td>
+                                                        <td>{{ $order->created_at->format('Y-m-d') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
+
                                 @if ($orders->hasMorePages())
                                     <button id="load-more" class="btn btn-primary btn-block" data-next-page="{{ $orders->nextPageUrl() }}">
                                         Load More
                                     </button>
                                 @endif
                             </div>
+
                         </div>
 
 
@@ -194,50 +202,43 @@
         if (loadMoreButton) {
             loadMoreButton.addEventListener('click', function () {
                 const nextPageUrl = this.getAttribute('data-next-page');
+                const startDate = document.querySelector('input[name="start_date"]').value;
+                const endDate = document.querySelector('input[name="end_date"]').value;
 
                 if (nextPageUrl) {
-                    // Fetch data from the next page
-                    fetch(nextPageUrl, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                        },
+                    fetch(`${nextPageUrl}&start_date=${startDate}&end_date=${endDate}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
                     })
                         .then(response => response.json())
                         .then(data => {
-                            // Update the table with new data
                             const tbody = document.getElementById('orders-tbody');
-                            data.data.forEach((order, index) => {
+                            data.orders.data.forEach(order => {
                                 const row = `
                                     <tr>
-                                        <td>${index + 1}</td>
                                         <td>${order.id}</td>
                                         <td>${order.customer_name || '-'}</td>
-                                        <td>${formatNumber(order.payment_amount)}</td>
-                                        <td>${formatNumber(order.discount_amount)}</td>
-                                        <td>${formatNumber(order.tax)}</td>
-                                        <td>${formatNumber(order.service_charge)}</td>
-                                        <td>${formatNumber(order.sub_total)}</td>
-                                        <td>${new Date(order.created_at).toISOString().split('T')[0]}</td>
-                                    </tr>
-                                `;
+                                        <td>${order.payment_amount.toFixed(2)}</td>
+                                        <td>${order.discount_amount.toFixed(2)}</td>
+                                        <td>${order.tax.toFixed(2)}</td>
+                                        <td>${order.service_charge.toFixed(2)}</td>
+                                        <td>${order.sub_total.toFixed(2)}</td>
+                                        <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                                    </tr>`;
                                 tbody.innerHTML += row;
                             });
 
-                            // Update the "Load More" button
-                            if (data.next_page_url) {
-                                loadMoreButton.setAttribute('data-next-page', data.next_page_url);
+                            if (data.orders.next_page_url) {
+                                loadMoreButton.setAttribute('data-next-page', data.orders.next_page_url);
                             } else {
-                                // If no more pages, remove the button
                                 loadMoreButton.remove();
                             }
                         })
-                        .catch(error => {
-                            console.error('Error loading more orders:', error);
-                        });
+                        .catch(error => console.error('Error:', error));
                 }
             });
         }
     });
+
 
     // Fungsi untuk memformat angka dengan pemisah ribuan
     function formatNumber(num) {
@@ -246,4 +247,16 @@
 
 
     </script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const startDate = document.querySelector('input[name="start_date"]').value;
+            const endDate = document.querySelector('input[name="end_date"]').value;
+
+            if (new Date(startDate) > new Date(endDate)) {
+                e.preventDefault();
+                alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir.');
+            }
+        });
+    </script>
+
 @endpush
