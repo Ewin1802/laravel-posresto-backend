@@ -55,7 +55,7 @@
                                     <div class="col-md-6">
                                         <ul class="list-group">
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                Total Revenue
+                                                Total Payment Amount (Jumlah Pembayaran Konsumen)
                                                 <span>{{ number_format($summary['total_revenue'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -67,7 +67,7 @@
                                                 <span>{{ number_format($summary['total_tax'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                Total Subtotal
+                                                Total Subtotal (Harga Satuan Makanan sebelum diskon dan tax)
                                                 <span>{{ number_format($summary['total_subtotal'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -153,7 +153,7 @@
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Revenue', 'Discount', 'Tax', 'Subtotal', 'Service Charge', 'Total'],
+                labels: ['Payment Amount', 'Discount', 'Tax', 'Subtotal', 'Service Charge', 'Total'],
                 datasets: [{
                     label: 'Summary',
                     data: [
