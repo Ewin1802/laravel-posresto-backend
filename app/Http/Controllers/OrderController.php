@@ -78,17 +78,10 @@ class OrderController extends Controller
             'total' => $query->sum('sub_total') - $query->sum('discount_amount') - $query->sum('tax') + $query->sum('service_charge'),
         ];
 
-        // Jika request adalah AJAX, kembalikan data JSON
-        if ($request->ajax()) {
-            return response()->json([
-                'orders' => $orders,
-                'summary' => $summary,
-            ]);
-        }
-
-        // Jika bukan AJAX, tampilkan halaman dengan data awal
+        // Tampilkan halaman dengan data awal
         return view('pages.order_reports.index', compact('orders', 'summary', 'start_date', 'end_date'));
     }
+
 
     public function summary(Request $request)
     {

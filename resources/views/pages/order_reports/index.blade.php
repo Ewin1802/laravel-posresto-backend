@@ -108,7 +108,7 @@
                                                 <th>Date</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="orders-tbody">
+                                        <tbody>
                                             @if ($orders->isEmpty())
                                                 <tr>
                                                     <td colspan="9" class="text-center">Tidak ada data transaksi ditemukan untuk rentang tanggal yang dipilih.</td>
@@ -131,11 +131,11 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                @if ($orders->hasMorePages())
-                                    <button id="load-more" class="btn btn-primary btn-block" data-next-page="{{ $orders->nextPageUrl() }}">
-                                        Load More
-                                    </button>
-                                @endif
+
+                                <!-- Pagination -->
+                                <div class="d-flex justify-content-center">
+                                    {{ $orders->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -147,7 +147,6 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         // Chart.js for summary visualization
         const ctx = document.getElementById('summaryChart').getContext('2d');
@@ -179,68 +178,5 @@
                 }
             }
         });
-
-        // Load More functionality with AJAX
-        document.addEventListener('DOMContentLoaded', function () {
-            const loadMoreButton = document.getElementById('load-more');
-
-            if (loadMoreButton) {
-                loadMoreButton.addEventListener('click', function () {
-                    const nextPageUrl = this.getAttribute('data-next-page');
-                    const startDate = document.querySelector('input[name="start_date"]').value;
-                    const endDate = document.querySelector('input[name="end_date"]').value;
-
-                    console.log('Next Page URL:', nextPageUrl);
-                    console.log('Start Date:', startDate);
-                    console.log('End Date:', endDate);
-
-                    if (nextPageUrl) {
-                        fetch(`${nextPageUrl}&start_date=${startDate}&end_date=${endDate}`, {
-                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`HTTP error! Status: ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                console.log('Response Data:', data);
-
-                                const tbody = document.getElementById('orders-tbody');
-                                data.orders.data.forEach(order => {
-                                    const row = `
-                                        <tr>
-                                            <td>${order.id}</td>
-                                            <td>${order.customer_name || '-'}</td>
-                                            <td>${order.payment_amount.toFixed(2)}</td>
-                                            <td>${order.discount_amount.toFixed(2)}</td>
-                                            <td>${order.tax.toFixed(2)}</td>
-                                            <td>${order.service_charge.toFixed(2)}</td>
-                                            <td>${order.sub_total.toFixed(2)}</td>
-                                            <td>${new Date(order.created_at).toLocaleDateString()}</td>
-                                        </tr>`;
-                                    tbody.innerHTML += row;
-                                });
-
-                                if (data.orders.next_page_url) {
-                                    loadMoreButton.setAttribute('data-next-page', data.orders.next_page_url);
-                                } else {
-                                    loadMoreButton.remove();
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error fetching data:', error);
-                            });
-                    }
-                });
-            }
-        });
-
-        // Fungsi untuk memformat angka dengan pemisah ribuan
-        function formatNumber(num) {
-            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
-        }
-
     </script>
 @endpush
