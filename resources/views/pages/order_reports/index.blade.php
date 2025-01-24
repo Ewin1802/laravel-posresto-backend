@@ -67,7 +67,7 @@
                                                 <span>{{ number_format($summary['total_tax'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                Total Subtotal (Harga Satuan Makanan sebelum diskon dan tax)
+                                                Total Subtotal (Harga Produk sebelum diskon dan tax)
                                                 <span>{{ number_format($summary['total_subtotal'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
