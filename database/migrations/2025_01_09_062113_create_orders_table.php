@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('id_kasir');
             $table->string('nama_kasir');
             $table->string('transaction_time');
+            // $table->unique('transaction_time');
             $table->timestamps();
         });
     }

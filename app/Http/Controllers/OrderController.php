@@ -58,8 +58,14 @@ class OrderController extends Controller
         $query = Order::query();
 
         // Filter berdasarkan tanggal jika input tanggal tersedia
+        // if ($start_date && $end_date) {
+        //     $query->whereBetween('created_at', [
+        //         $start_date . ' 00:00:00',
+        //         $end_date . ' 23:59:59',
+        //     ]);
+        // }
         if ($start_date && $end_date) {
-            $query->whereBetween('created_at', [
+            $query->whereRaw("STR_TO_DATE(transaction_time, '%Y-%m-%dT%H:%i:%s') BETWEEN ? AND ?", [
                 $start_date . ' 00:00:00',
                 $end_date . ' 23:59:59',
             ]);

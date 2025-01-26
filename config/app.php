@@ -72,6 +72,7 @@ return [
 
     // 'timezone' => 'UTC',
     'timezone' => 'Asia/Makassar',
+    // 'timezone' => 'Asia/Dhaka',
 
     /*
     |--------------------------------------------------------------------------
