@@ -10,6 +10,73 @@ use App\Models\OrderItem;
 class OrderController extends Controller
 {
     //save order
+    // public function saveOrder(Request $request)
+    // {
+    //     //validate request
+    //     $request->validate([
+    //         'payment_amount' => 'required',
+    //         'sub_total' => 'required',
+    //         'tax' => 'required',
+    //         'discount' => 'required',
+    //         'discount_amount' => 'required',
+    //         'service_charge' => 'required',
+    //         'total' => 'required',
+    //         'payment_method' => 'required',
+    //         'total_item' => 'required',
+    //         'id_kasir' => 'required',
+    //         'nama_kasir' => 'required',
+    //         'transaction_time' => 'required',
+    //         'customer_name' => 'nullable|string',
+    //         'order_items' => 'required|array',
+    //         'is_open' => 'required|boolean', // Menandakan apakah transaksi open
+    //     ]);
+
+    //     // Tentukan open_date
+    //     $openDate = null;
+    //     if ($request->is_open) {
+    //         // Jika transaksi masih open, gunakan tanggal dari sesi aktif
+    //         $openDate = $this->getCurrentOpenDate($request->id_kasir); // Implementasikan metode ini di langkah berikut
+    //     } else {
+    //         // Jika tidak ada sesi aktif, gunakan tanggal sekarang
+    //         $openDate = now()->toDateString();
+    //     }
+
+    //     //create order
+    //     $order = Order::create([
+    //         'payment_amount' => $request->payment_amount,
+    //         'sub_total' => $request->sub_total,
+    //         'tax' => $request->tax,
+    //         'discount' => $request->discount,
+    //         'discount_amount' => $request->discount_amount,
+    //         'service_charge' => $request->service_charge,
+    //         'total' => $request->total,
+    //         'payment_method' => $request->payment_method,
+    //         'total_item' => $request->total_item,
+    //         'id_kasir' => $request->id_kasir,
+    //         'nama_kasir' => $request->nama_kasir,
+    //         'transaction_time' => $request->transaction_time,
+    //         'customer_name' => $request->customer_name ?? null,
+    //         'open_date' => $openDate, // Tambahkan open_date
+    //         'is_closed' => false,    // Default order masih open
+    //     ]);
+
+    //     //create order items
+    //     foreach ($request->order_items as $item) {
+    //         OrderItem::create([
+    //             'order_id' => $order->id,
+    //             'product_id' => $item['id_product'],
+    //             'quantity' => $item['quantity'],
+    //             'price' => $item['price']
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'data' => $order
+    //     ], 200);
+    // }
+
+    //save order
     public function saveOrder(Request $request)
     {
         //validate request
@@ -62,70 +129,6 @@ class OrderController extends Controller
             'data' => $order
         ], 200);
     }
-
-    // public function saveOrder(Request $request)
-    // {
-    //     // Validate request
-    //     $request->validate([
-    //         'payment_amount' => 'required',
-    //         'sub_total' => 'required',
-    //         'tax' => 'required',
-    //         'discount' => 'required',
-    //         'discount_amount' => 'required',
-    //         'service_charge' => 'required',
-    //         'total' => 'required',
-    //         'payment_method' => 'required',
-    //         'total_item' => 'required',
-    //         'id_kasir' => 'required',
-    //         'nama_kasir' => 'required',
-    //         'transaction_time' => 'required',
-    //         'customer_name' => 'nullable|string', // Customer name boleh kosong
-    //         // 'order_items' => 'required'
-    //     ]);
-
-    //     // Check if transaction_time already exists in the database
-    //     $existingOrder = Order::where('transaction_time', $request->transaction_time)->first();
-    //     if ($existingOrder) {
-    //         // Return a response to indicate the transaction is ignored
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Transaction with the same transaction_time already exists',
-    //             'data' => $existingOrder
-    //         ], 409); // HTTP 409 Conflict
-    //     }
-
-    //     // Create order
-    //     $order = Order::create([
-    //         'payment_amount' => $request->payment_amount,
-    //         'sub_total' => $request->sub_total,
-    //         'tax' => $request->tax,
-    //         'discount' => $request->discount,
-    //         'discount_amount' => $request->discount_amount,
-    //         'service_charge' => $request->service_charge,
-    //         'total' => $request->total,
-    //         'payment_method' => $request->payment_method,
-    //         'total_item' => $request->total_item,
-    //         'id_kasir' => $request->id_kasir,
-    //         'nama_kasir' => $request->nama_kasir,
-    //         'transaction_time' => $request->transaction_time,
-    //         'customer_name' => $request->customer_name ?? null, // Jika tidak ada, simpan null
-    //     ]);
-
-    //     // Create order items
-    //     foreach ($request->order_items as $item) {
-    //         OrderItem::create([
-    //             'order_id' => $order->id,
-    //             'product_id' => $item['id_product'],
-    //             'quantity' => $item['quantity'],
-    //             'price' => $item['price']
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'data' => $order
-    //     ], 200);
-    // }
 
 
     public function index(Request $request)

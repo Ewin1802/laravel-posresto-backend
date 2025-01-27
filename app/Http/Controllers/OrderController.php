@@ -9,30 +9,33 @@ use App\Models\OrderItem;
 class OrderController extends Controller
 {
 
-
     // public function index(Request $request)
     // {
+    //     // Ambil input tanggal dari request
     //     $start_date = $request->input('start_date');
     //     $end_date = $request->input('end_date');
+
+    //     // Mulai query dengan model Order
     //     $query = Order::query();
 
-    //     // Filter berdasarkan tanggal dengan waktu penuh
+    //     // Filter berdasarkan tanggal jika input tanggal tersedia
+    //     // if ($start_date && $end_date) {
+    //     //     $query->whereBetween('created_at', [
+    //     //         $start_date . ' 00:00:00',
+    //     //         $end_date . ' 23:59:59',
+    //     //     ]);
+    //     // }
     //     if ($start_date && $end_date) {
-    //         $query->whereBetween('created_at', [
+    //         $query->whereRaw("STR_TO_DATE(transaction_time, '%Y-%m-%dT%H:%i:%s') BETWEEN ? AND ?", [
     //             $start_date . ' 00:00:00',
-    //             $end_date . ' 23:59:59'
+    //             $end_date . ' 23:59:59',
     //         ]);
     //     }
 
-    //     // $orders = $query->paginate(10); // Paginate orders
-
-    //     // Return paginated data for AJAX
-    //     if ($request->ajax()) {
-    //         return response()->json($query->paginate(10));
-    //     }
-    //     // Otherwise, return normal view for initial load
+    //     // Paginasi data
     //     $orders = $query->paginate(10);
 
+    //     // Perhitungan ringkasan data berdasarkan query yang sama
     //     $summary = [
     //         'total_revenue' => $query->sum('payment_amount'),
     //         'total_discount' => $query->sum('discount_amount'),
@@ -42,9 +45,7 @@ class OrderController extends Controller
     //         'total' => $query->sum('sub_total') - $query->sum('discount_amount') - $query->sum('tax') + $query->sum('service_charge'),
     //     ];
 
-    //     // Debugging (hapus setelah testing)
-    //     // dd($query->toSql(), $query->getBindings(), $orders);
-
+    //     // Tampilkan halaman dengan data awal
     //     return view('pages.order_reports.index', compact('orders', 'summary', 'start_date', 'end_date'));
     // }
 
@@ -54,39 +55,36 @@ class OrderController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
 
-        // Mulai query dengan model Order
-        $query = Order::query();
+        // Inisialisasi data transaksi dan ringkasan kosong
+        $orders = [];
+        $summary = [];
 
         // Filter berdasarkan tanggal jika input tanggal tersedia
-        // if ($start_date && $end_date) {
-        //     $query->whereBetween('created_at', [
-        //         $start_date . ' 00:00:00',
-        //         $end_date . ' 23:59:59',
-        //     ]);
-        // }
         if ($start_date && $end_date) {
-            $query->whereRaw("STR_TO_DATE(transaction_time, '%Y-%m-%dT%H:%i:%s') BETWEEN ? AND ?", [
-                $start_date . ' 00:00:00',
-                $end_date . ' 23:59:59',
-            ]);
+            // Query untuk mendapatkan data transaksi berdasarkan tanggal
+            $orders = Order::whereRaw(
+                "STR_TO_DATE(transaction_time, '%Y-%m-%dT%H:%i:%s') BETWEEN ? AND ?",
+                [$start_date . ' 00:00:00', $end_date . ' 23:59:59']
+            )->get(); // Tidak menggunakan paginasi
+
+            // Perhitungan ringkasan data
+            $summary = [
+                'total_revenue' => $orders->sum('payment_amount'),
+                'total_discount' => $orders->sum('discount_amount'),
+                'total_tax' => $orders->sum('tax'),
+                'total_subtotal' => $orders->sum('sub_total'),
+                'total_service_charge' => $orders->sum('service_charge'),
+                'total' => $orders->sum('sub_total')
+                            - $orders->sum('discount_amount')
+                            - $orders->sum('tax')
+                            + $orders->sum('service_charge'),
+            ];
         }
 
-        // Paginasi data
-        $orders = $query->paginate(10);
-
-        // Perhitungan ringkasan data berdasarkan query yang sama
-        $summary = [
-            'total_revenue' => $query->sum('payment_amount'),
-            'total_discount' => $query->sum('discount_amount'),
-            'total_tax' => $query->sum('tax'),
-            'total_subtotal' => $query->sum('sub_total'),
-            'total_service_charge' => $query->sum('service_charge'),
-            'total' => $query->sum('sub_total') - $query->sum('discount_amount') - $query->sum('tax') + $query->sum('service_charge'),
-        ];
-
-        // Tampilkan halaman dengan data awal
+        // Tampilkan halaman dengan data yang sesuai
         return view('pages.order_reports.index', compact('orders', 'summary', 'start_date', 'end_date'));
     }
+
 
 
     public function summary(Request $request)

@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('nama_kasir');
             $table->string('transaction_time');
             // $table->unique('transaction_time');
+            // $table->date('open_date'); // Tanggal pembukaan order
+            // $table->boolean('is_closed')->default(false); // Status open/close
             $table->timestamps();
         });
     }
