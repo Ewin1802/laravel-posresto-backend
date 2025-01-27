@@ -57,28 +57,36 @@ class OrderController extends Controller
 
         // Inisialisasi data transaksi dan ringkasan kosong
         $orders = [];
-        $summary = [];
+        $summary = [
+            'total_revenue' => 0,
+            'total_discount' => 0,
+            'total_tax' => 0,
+            'total_subtotal' => 0,
+            'total_service_charge' => 0,
+            'total' => 0,
+        ];
 
         // Filter berdasarkan tanggal jika input tanggal tersedia
         if ($start_date && $end_date) {
-            // Query untuk mendapatkan data transaksi berdasarkan tanggal
             $orders = Order::whereRaw(
                 "STR_TO_DATE(transaction_time, '%Y-%m-%dT%H:%i:%s') BETWEEN ? AND ?",
                 [$start_date . ' 00:00:00', $end_date . ' 23:59:59']
-            )->get(); // Tidak menggunakan paginasi
+            )->get();
 
-            // Perhitungan ringkasan data
-            $summary = [
-                'total_revenue' => $orders->sum('payment_amount'),
-                'total_discount' => $orders->sum('discount_amount'),
-                'total_tax' => $orders->sum('tax'),
-                'total_subtotal' => $orders->sum('sub_total'),
-                'total_service_charge' => $orders->sum('service_charge'),
-                'total' => $orders->sum('sub_total')
-                            - $orders->sum('discount_amount')
-                            - $orders->sum('tax')
-                            + $orders->sum('service_charge'),
-            ];
+            // Perhitungan ringkasan data jika ada order
+            if (!$orders->isEmpty()) {
+                $summary = [
+                    'total_revenue' => $orders->sum('payment_amount'),
+                    'total_discount' => $orders->sum('discount_amount'),
+                    'total_tax' => $orders->sum('tax'),
+                    'total_subtotal' => $orders->sum('sub_total'),
+                    'total_service_charge' => $orders->sum('service_charge'),
+                    'total' => $orders->sum('sub_total')
+                                - $orders->sum('discount_amount')
+                                - $orders->sum('tax')
+                                + $orders->sum('service_charge'),
+                ];
+            }
         }
 
         // Tampilkan halaman dengan data yang sesuai
