@@ -89,53 +89,56 @@
 
                         <!-- Orders Table -->
                        <!-- Orders Table -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Daftar Transaksi</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
+                       <div class="card">
+                        <div class="card-header">
+                            <h4>Daftar Transaksi</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Payment Amount</th>
+                                            <th>Discount</th>
+                                            <th>Tax</th>
+                                            <th>Service Charge</th>
+                                            <th>Subtotal</th>
+                                            <th>Date</th>
+                                            <th>Time</th> <!-- Kolom baru untuk jam -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if ($orders->isEmpty())
                                             <tr>
-                                                <th>#</th>
-                                                <th>Order ID</th>
-                                                <th>Customer</th>
-                                                <th>Payment Amount</th>
-                                                <th>Discount</th>
-                                                <th>Tax</th>
-                                                <th>Service Charge</th>
-                                                <th>Subtotal</th>
-                                                <th>Date</th>
+                                                <td colspan="10" class="text-center">
+                                                    {{ $start_date && $end_date ? 'Tidak ada data transaksi ditemukan untuk rentang tanggal yang dipilih.' : 'Silakan pilih rentang tanggal untuk menampilkan data.' }}
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if ($orders->isEmpty())
+                                        @else
+                                            @foreach ($orders as $order)
                                                 <tr>
-                                                    <td colspan="9" class="text-center">
-                                                        {{ $start_date && $end_date ? 'Tidak ada data transaksi ditemukan untuk rentang tanggal yang dipilih.' : 'Silakan pilih rentang tanggal untuk menampilkan data.' }}
-                                                    </td>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $order->id }}</td>
+                                                    <td>{{ $order->customer_name }}</td>
+                                                    <td>{{ number_format($order->payment_amount, 2) }}</td>
+                                                    <td>{{ number_format($order->discount_amount, 2) }}</td>
+                                                    <td>{{ number_format($order->tax, 2) }}</td>
+                                                    <td>{{ number_format($order->service_charge, 2) }}</td>
+                                                    <td>{{ number_format($order->sub_total, 2) }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('Y-m-d') }}</td> <!-- Tanggal -->
+                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('H:i:s') }}</td> <!-- Jam -->
                                                 </tr>
-                                            @else
-                                                @foreach ($orders as $order)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $order->id }}</td>
-                                                        <td>{{ $order->customer_name }}</td>
-                                                        <td>{{ number_format($order->payment_amount, 2) }}</td>
-                                                        <td>{{ number_format($order->discount_amount, 2) }}</td>
-                                                        <td>{{ number_format($order->tax, 2) }}</td>
-                                                        <td>{{ number_format($order->service_charge, 2) }}</td>
-                                                        <td>{{ number_format($order->sub_total, 2) }}</td>
-                                                        <td>{{ $order->created_at->format('Y-m-d') }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            @endif
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            @endforeach
+                                        @endif
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                    </div>
+
 
                     </div>
                 </div>
