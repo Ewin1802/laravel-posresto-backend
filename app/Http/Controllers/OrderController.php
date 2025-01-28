@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 class OrderController extends Controller
 {
 
+
     // public function index(Request $request)
     // {
     //     // Ambil input tanggal dari request
@@ -58,24 +59,21 @@ class OrderController extends Controller
         // Mulai query dengan model Order
         $query = Order::query();
 
-        // Filter berdasarkan tanggal jika input tanggal tersedia
-        // if ($start_date && $end_date) {
-        //     $query->whereBetween('created_at', [
-        //         $start_date . ' 00:00:00',
-        //         $end_date . ' 23:59:59',
-        //     ]);
-        // }
+        // Jika tanggal difilter, gunakan filter `whereRaw`
         if ($start_date && $end_date) {
             $query->whereRaw("STR_TO_DATE(transaction_time, '%Y-%m-%dT%H:%i:%s') BETWEEN ? AND ?", [
                 $start_date . ' 00:00:00',
                 $end_date . ' 23:59:59',
             ]);
+
+            // Ambil seluruh data tanpa paginasi
+            $orders = $query->get();
+        } else {
+            // Jika tidak ada filter tanggal, tampilkan daftar kosong
+            $orders = collect(); // Koleksi kosong
         }
 
-        // Paginasi data
-        $orders = $query->paginate(10);
-
-        // Perhitungan ringkasan data berdasarkan query yang sama
+        // Perhitungan ringkasan data berdasarkan query
         $summary = [
             'total_revenue' => $query->sum('payment_amount'),
             'total_discount' => $query->sum('discount_amount'),

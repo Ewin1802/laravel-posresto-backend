@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::factory(1)->create();
+        // \App\Models\User::factory(1)->create();
 
         \App\Models\User::factory()->create([
             'name' => 'ARCH Admin',
@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('89898989'),
             'role' => 'admin',
         ]);
+        
         \App\Models\User::factory()->create([
             'name' => 'ARCH Staf',
             'email' => 'arch@staf.com',

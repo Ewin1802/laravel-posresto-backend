@@ -88,6 +88,7 @@
                         </div>
 
                         <!-- Orders Table -->
+                       <!-- Orders Table -->
                         <div class="card">
                             <div class="card-header">
                                 <h4>Daftar Transaksi</h4>
@@ -111,7 +112,9 @@
                                         <tbody>
                                             @if ($orders->isEmpty())
                                                 <tr>
-                                                    <td colspan="9" class="text-center">Tidak ada data transaksi ditemukan untuk rentang tanggal yang dipilih.</td>
+                                                    <td colspan="9" class="text-center">
+                                                        {{ $start_date && $end_date ? 'Tidak ada data transaksi ditemukan untuk rentang tanggal yang dipilih.' : 'Silakan pilih rentang tanggal untuk menampilkan data.' }}
+                                                    </td>
                                                 </tr>
                                             @else
                                                 @foreach ($orders as $order)
@@ -131,13 +134,9 @@
                                         </tbody>
                                     </table>
                                 </div>
-
-                                <!-- Pagination -->
-                                <div class="d-flex justify-content-center">
-                                    {{ $orders->links() }}
-                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
