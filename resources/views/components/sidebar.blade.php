@@ -17,27 +17,27 @@
                 </ul> --}}
                 <li class="nav-item {{ Request::is('user*') ? 'active' : '' }}">
                     <a href="{{ route('users.index') }}" class="nav-link">
-                        <i class="fas fa-fire"></i><span>User</span>
+                        <i class="fas fa-fire"></i><span>Pengguna</span>
                     </a>
                 </li>
                 <li class="nav-item {{ Request::is('produ*') ? 'active' : '' }}">
                     <a href="{{ route('products.index') }}" class="nav-link">
-                        <i class="fas fa-fire"></i><span>Product</span>
+                        <i class="fas fa-fire"></i><span>Produk</span>
                     </a>
                 </li>
                 <li class="nav-item {{ Request::is('categories*') ? 'active' : '' }}">
                     <a href="{{ route('categories.index') }}" class="nav-link">
-                        <i class="fas fa-fire"></i><span>Category</span>
+                        <i class="fas fa-fire"></i><span>Kategori</span>
                     </a>
                 </li>
                 <li class="nav-item {{ Request::is('discounts*') ? 'active' : '' }}">
                     <a href="{{ route('discounts.index') }}" class="nav-link">
-                        <i class="fas fa-fire"></i><span>Discount</span>
+                        <i class="fas fa-fire"></i><span>Diskon</span>
                     </a>
                 </li>
                 <li class="nav-item {{ Request::is('orde*') ? 'active' : '' }}">
                     <a href="{{ route('order_reports.index') }}" class="nav-link">
-                        <i class="fas fa-fire"></i><span>Order Report</span>
+                        <i class="fas fa-fire"></i><span>Laporan Fulus</span>
                     </a>
                 </li>
 
