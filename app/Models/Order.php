@@ -24,4 +24,10 @@ class Order extends Model
         'transaction_time',
         'customer_name',
     ];
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+
 }

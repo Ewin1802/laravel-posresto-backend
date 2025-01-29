@@ -42,6 +42,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/order-reports', [OrderController::class, 'index'])->name('order_reports.index');
         //post update products
         Route::post('products/update/{id}', [ProductController::class, 'update'])->name('products.newupdate');
+
+        Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+
     });
 
 

@@ -11,7 +11,7 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Laporan Pesanan dan Keuangan</h1>
+                <h1>Laporan Fuluuusss</h1>
             </div>
 
             <div class="section-body">
@@ -75,7 +75,7 @@
                                                 <span>{{ number_format($summary['total_service_charge'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                Total (Faedah Bersih)
+                                                Total (Fulus Bersih)
                                                 <span>{{ number_format($summary['total'], 2) }}</span>
                                             </li>
                                         </ul>
@@ -104,10 +104,11 @@
                                             <th>Payment Amount</th>
                                             <th>Discount</th>
                                             <th>Tax</th>
-                                            <th>Service Charge</th>
+                                            {{-- <th>Service Charge</th> --}}
                                             <th>Subtotal</th>
                                             <th>Date</th>
-                                            <th>Time</th> <!-- Kolom baru untuk jam -->
+                                            <th>Waktu Garida</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -126,10 +127,14 @@
                                                     <td>{{ number_format($order->payment_amount, 2) }}</td>
                                                     <td>{{ number_format($order->discount_amount, 2) }}</td>
                                                     <td>{{ number_format($order->tax, 2) }}</td>
-                                                    <td>{{ number_format($order->service_charge, 2) }}</td>
+                                                    {{-- <td>{{ number_format($order->service_charge, 2) }}</td> --}}
                                                     <td>{{ number_format($order->sub_total, 2) }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('Y-m-d') }}</td> <!-- Tanggal -->
                                                     <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('H:i:s') }}</td> <!-- Jam -->
+                                                    <td>
+                                                        <button class="btn btn-info btn-sm view-details" data-id="{{ $order->id }}">Detail</button>
+                                                    </td>
+
                                                 </tr>
                                             @endforeach
                                         @endif
@@ -181,4 +186,97 @@
             }
         });
     </script>
+
+    <script>
+       $(document).ready(function () {
+        $('.view-details').click(function () {
+            let orderId = $(this).data('id');
+            $('#order-id').text(orderId);
+            $('#order-items').html('');
+            $('#customer-name').text('');
+            $('#total-bayar').text(''); // Reset total bayar
+
+            $.ajax({
+                url: `/orders/${orderId}`,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.order) {
+                        $('#customer-name').text(response.order.customer_name);
+
+                        let totalBayar = 0; // Inisialisasi total pembayaran
+
+                        if (response.items.length > 0) {
+                            response.items.forEach(item => {
+                                let totalItem = parseFloat(item.total.replace(/,/g, '')); // Konversi string ke angka
+                                totalBayar += totalItem;
+
+                                $('#order-items').append(`
+                                    <tr>
+                                        <td>${item.product_name}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>${item.price}</td>
+                                        <td>${item.total}</td>
+                                    </tr>
+                                `);
+                            });
+
+                            // Format total bayar dengan 2 desimal dan ribuan separator
+                            $('#total-bayar').text(new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2 }).format(totalBayar));
+                        } else {
+                            $('#order-items').html('<tr><td colspan="4" class="text-center">Tidak ada item dalam pesanan ini.</td></tr>');
+                            $('#total-bayar').text('0.00');
+                        }
+
+                        $('#orderDetailModal').modal('show');
+                    } else {
+                        alert('Data pesanan tidak ditemukan.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('Gagal mengambil data pesanan.');
+                }
+            });
+        });
+    });
+
+
+    </script>
+
 @endpush
+
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalLabel">Detail Pesanan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6><strong>Order ID:</strong> <span id="order-id"></span></h6>
+                <h6><strong>Nama Customer:</strong> <span id="customer-name"></span></h6>
+                <hr>
+                <h6><strong>Rincian Pesanan:</strong></h6>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Produk</th>
+                            <th>Jumlah</th>
+                            <th>Harga</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-items">
+                        <!-- Data dari AJAX akan dimasukkan di sini -->
+                    </tbody>
+                </table>
+                <hr>
+                <h6><strong>Total Bayar:</strong> <span id="total-bayar" class="text-primary font-weight-bold"></span></h6>
+            </div>
+        </div>
+    </div>
+</div>
+

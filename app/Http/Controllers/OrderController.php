@@ -115,4 +115,22 @@ class OrderController extends Controller
             ]
         ], 200);
     }
+
+    public function show($id)
+    {
+        $order = Order::with('orderItems.product')->findOrFail($id);
+
+        return response()->json([
+            'order' => $order,
+            'items' => $order->orderItems->map(function ($item) {
+                return [
+                    'product_name' => $item->product->name,
+                    'quantity' => $item->quantity,
+                    'price' => number_format($item->price, 2),
+                    'total' => number_format($item->quantity * $item->price, 2),
+                ];
+            })
+        ]);
+    }
+
 }
