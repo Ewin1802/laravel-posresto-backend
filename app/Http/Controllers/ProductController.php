@@ -128,12 +128,29 @@ class ProductController extends Controller
     }
 
     // destroy
+    // public function destroy($id)
+    // {
+    //     // delete the request...
+    //     $product = Product::find($id);
+    //     $product->delete();
+
+    //     return redirect()->route('products.index')->with('success', 'Product deleted successfully');
+    // }
     public function destroy($id)
     {
-        // delete the request...
-        $product = Product::find($id);
-        $product->delete();
+        // 🔥 Hapus semua order_items yang terkait sebelum menghapus produk
+        DB::table('order_items')->where('product_id', $id)->delete();
 
-        return redirect()->route('products.index')->with('success', 'Product deleted successfully');
+        // Cari produk berdasarkan ID
+        $product = Product::find($id);
+
+        // Jika produk ditemukan, hapus
+        if ($product) {
+            $product->delete();
+            return redirect()->route('products.index')->with('success', 'Product deleted successfully');
+        }
+
+        return redirect()->route('products.index')->with('error', 'Product not found');
     }
+
 }

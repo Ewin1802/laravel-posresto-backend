@@ -87,7 +87,6 @@
                             </div>
                         </div>
 
-                        <!-- Orders Table -->
                        <!-- Orders Table -->
                        <div class="card">
                         <div class="card-header">
@@ -100,10 +99,10 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Payment Amount</th>
-                                            <th>Discount</th>
-                                            <th>Tax</th>
+                                            <th>Nama Pengunjung</th>
+                                            <th>Bayar</th>
+                                            <th>Diskon</th>
+                                            <th>Pajak</th>
                                             {{-- <th>Service Charge</th> --}}
                                             <th>Subtotal</th>
                                             <th>Date</th>
@@ -111,6 +110,7 @@
                                             <th>Action</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         @if ($orders->isEmpty())
                                             <tr>
@@ -130,15 +130,15 @@
                                                     {{-- <td>{{ number_format($order->service_charge, 2) }}</td> --}}
                                                     <td>{{ number_format($order->sub_total, 2) }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('Y-m-d') }}</td> <!-- Tanggal -->
-                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('H:i:s') }}</td> <!-- Jam -->
+                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->addHours(2)->format('H:i:s') }}</td> <!-- Waktu Garida (+2 Jam) -->
                                                     <td>
                                                         <button class="btn btn-info btn-sm view-details" data-id="{{ $order->id }}">Detail</button>
                                                     </td>
-
                                                 </tr>
                                             @endforeach
                                         @endif
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>

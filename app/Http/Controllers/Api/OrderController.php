@@ -76,10 +76,11 @@ class OrderController extends Controller
     //     ], 200);
     // }
 
-    //save order
+
+
     public function saveOrder(Request $request)
     {
-        //validate request
+        // Validate request
         $request->validate([
             'payment_amount' => 'required',
             'sub_total' => 'required',
@@ -93,11 +94,24 @@ class OrderController extends Controller
             'id_kasir' => 'required',
             'nama_kasir' => 'required',
             'transaction_time' => 'required',
-            'customer_name' => 'nullable|string', // Customer name boleh kosong
-            // 'order_items' => 'required'
+            'customer_name' => 'nullable|string',
         ]);
 
-        //create order
+        // Cek apakah order dengan transaction_time yang sama sudah ada
+        $existingOrder = Order::where('transaction_time', $request->transaction_time)
+                              ->where('id_kasir', $request->id_kasir) // Optional: untuk memastikan per kasir
+                              ->first();
+
+        if ($existingOrder) {
+            // Jika ingin menimpa data yang lama, kita bisa update di sini
+            return response()->json([
+                'status' => 'exists',
+                'message' => 'Order already exists, ignoring duplicate entry.',
+                'data' => $existingOrder
+            ], 200);
+        }
+
+        // Jika order belum ada, buat order baru
         $order = Order::create([
             'payment_amount' => $request->payment_amount,
             'sub_total' => $request->sub_total,
@@ -111,10 +125,10 @@ class OrderController extends Controller
             'id_kasir' => $request->id_kasir,
             'nama_kasir' => $request->nama_kasir,
             'transaction_time' => $request->transaction_time,
-            'customer_name' => $request->customer_name ?? null, // Jika tidak ada, simpan null
+            'customer_name' => $request->customer_name ?? null,
         ]);
 
-        //create order items
+        // Tambahkan order items
         foreach ($request->order_items as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
@@ -129,7 +143,6 @@ class OrderController extends Controller
             'data' => $order
         ], 200);
     }
-
 
     public function index(Request $request)
     {
