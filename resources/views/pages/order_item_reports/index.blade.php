@@ -57,8 +57,7 @@
                                         <div class="col-md-5">
                                             <label for="end_date">Sampai Tanggal:</label>
                                             {{-- <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date', $endDate) }}"> --}}
-                                            <input type="date" name="end_date" id="end_date" class="form-control"
-    value="{{ request('end_date', $end_date ?? Carbon::now()->endOfMonth()->toDateString()) }}" required>
+                                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date', $end_date ?? Carbon::now()->endOfMonth()->toDateString()) }}" required>
                                         </div>
                                         <div class="col-md-2 d-flex align-items-end">
                                             <button type="submit" class="btn btn-primary w-100">
@@ -77,7 +76,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Grafik Produk Terlaris</h4>
+                                <h4>Grafik Top Produk ARCH</h4>
                             </div>
                             <div class="card-body">
                                 <canvas id="productChart" height="100"></canvas>
@@ -91,7 +90,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Top Produk Terlaris ARCH saat ini</h4>
+                                <h4>Top Produk ARCH saat ini</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
