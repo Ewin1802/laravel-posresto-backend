@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
 
+        Route::get('/top-products', [OrderItemController::class, 'index'])->name('top.products');
     });
 
 

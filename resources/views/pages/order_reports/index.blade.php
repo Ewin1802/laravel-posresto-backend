@@ -25,25 +25,42 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4>Filter berdasarkan Tanggal</h4>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4>Filter Berdasarkan Tanggal</h4>
                             </div>
+
                             <div class="card-body">
+                                <!-- Alert Error (Jika Ada) -->
+                                @if (session('error'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <strong>Error!</strong> {{ session('error') }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                @endif
+
+                                <!-- Form Filter -->
                                 <form method="GET" action="{{ route('order_reports.index') }}">
-                                    <div class="form-row">
+                                    <div class="row">
                                         <div class="col-md-5">
-                                            <input type="date" name="start_date" class="form-control" value="{{ $start_date }}" required>
+                                            <label for="start_date">Dari Tanggal:</label>
+                                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date', $start_date) }}" required>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" name="end_date" class="form-control" value="{{ $end_date }}" required>
+                                            <label for="end_date">Sampai Tanggal:</label>
+                                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date', $end_date) }}" required>
                                         </div>
-                                        <div class="col-md-2">
-                                            <button type="submit" class="btn btn-primary">Filter</button>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fas fa-filter"></i> Filter
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
+
 
                         <!-- Summary Section -->
                         <div class="card">

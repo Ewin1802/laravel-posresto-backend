@@ -40,6 +40,11 @@
                         <i class="fas fa-fire"></i><span>Laporan Fulus</span>
                     </a>
                 </li>
+                <li class="nav-item {{ Request::is('top*') ? 'active' : '' }}">
+                    <a href="{{ route('top.products') }}" class="nav-link">
+                        <i class="fas fa-fire"></i><span>Laporan Produk</span>
+                    </a>
+                </li>
 
 
 
