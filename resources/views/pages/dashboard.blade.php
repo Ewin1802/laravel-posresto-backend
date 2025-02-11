@@ -22,13 +22,12 @@
                         <div class="card-header">
                             <h4>
                                 <i class="fas fa-lightbulb text-dark"></i> <!-- Icon lampu menyala -->
-                                Welcome to the Dashboard
+                                Attention
                             </h4>
                         </div>
                         <div class="card-body">
-                            <p>Selamat datang di dashboard ARCH Manajemen. Silahkan gunakan menu di samping untuk mengakses
-                                fitur-fitur yang tersedia.</p>
-                                <p>Diinformasikan kepada Owner, Website ini menggunakan Layanan Cloud Server yang dibayar per Tahun sebesar Rp.1.000.000,-. Diingatkan untuk membayar kewajiban tersebut setiap tahun sebelum tanggal 23 Januari 2026, agar data penjualan tidak hilang. Terima Kasih.</p>
+
+                                <p>Diinformasikan kepada owner, Website ini menggunakan Layanan Cloud Server yang dibayar per Tahun sebesar Rp.1.000.000,-. Diingatkan untuk membayar kewajiban tersebut tanggal 23 Januari setiap tahunnya (Jatuh Tempo berikut tanggal 23 Januari 2026) agar data penjualan tidak hilang. Terima Kasih.</p>
                         </div>
                     </div>
                 </div>

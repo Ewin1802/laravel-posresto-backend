@@ -48,7 +48,4 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/top-products', [OrderItemController::class, 'index'])->name('top.products');
     });
-
-
-
 });
