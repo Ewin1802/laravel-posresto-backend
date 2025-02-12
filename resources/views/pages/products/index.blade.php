@@ -55,49 +55,15 @@
                                     <table class="table-striped table">
                                         <tr>
                                             <th>No</th>
-                                            <th>Name</th>
-                                            <th>Category</th>
-                                            <th>Price</th>
+                                            <th>Gambar</th> <!-- Tambahkan kolom gambar -->
+                                            <th>Nama Produk</th>
+                                            <th>Kategori</th>
+                                            <th>Harga</th>
                                             <th>Status</th>
-                                            <th>Create At</th>
-                                            <th>Action</th>
+                                            <th>Dibuat tanggal</th>
+                                            <th>Aksi</th>
                                         </tr>
-                                        {{-- @foreach ($products as $product)
-                                            <tr>
-
-                                                <td>{{ $product->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $product->category->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $product->price }}
-                                                </td>
-                                                <td>
-                                                    {{ $product->status == 1 ? 'Active' : 'Inactive' }}
-                                                </td>
-                                                <td>{{ $product->created_at }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('products.edit', $product->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('products.destroy', $product->id) }}"
-                                                            method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach --}}
+                                        
                                         @foreach ($products as $product)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
