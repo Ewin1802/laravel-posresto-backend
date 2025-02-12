@@ -99,30 +99,36 @@
                                             </tr>
                                         @endforeach --}}
                                         @foreach ($products as $product)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $product->name }}</td>
-                                                {{-- <td>{{ $product->category->name }}</td> --}}
-                                                <td>{{ $product->category_name }}</td> <!-- Menampilkan nama kategori -->
-                                                <td>{{ number_format($product->price, 0, ',', '.') }}</td> <!-- Format harga -->
-                                                <td>{{ $product->status == 1 ? 'Active' : 'Inactive' }}</td>
-                                                <td>{{ $product->created_at }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('products.edit', $product->id) }}' class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i> Edit
-                                                        </a>
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                @if ($product->image)
+                                                    <img src="{{ asset($product->image) }}" width="50" height="50" alt="{{ $product->name }}">
+                                                @else
+                                                    <span>Tidak ada gambar</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $product->name }}</td>
+                                            <td>{{ $product->category_name }}</td>
+                                            <td>{{ number_format($product->price, 0, ',', '.') }}</td>
+                                            <td>{{ $product->status == 1 ? 'Active' : 'Inactive' }}</td>
+                                            <td>{{ $product->created_at }}</td>
+                                            <td>
+                                                <div class="d-flex justify-content-center">
+                                                    <a href='{{ route('products.edit', $product->id) }}' class="btn btn-sm btn-info btn-icon">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
 
-                                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="ml-2">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-sm btn-danger btn-icon confirm-delete">
+                                                            <i class="fas fa-times"></i> Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
                                         @endforeach
 
 

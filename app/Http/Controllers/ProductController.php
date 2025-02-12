@@ -159,9 +159,13 @@ class ProductController extends Controller
                 Storage::delete($product->image);
             }
 
-            // Simpan gambar baru dengan nama unik
-            $imagePath = $request->file('image')->store('public/products');
-            $product->image = str_replace('public/', 'storage/', $imagePath);
+            // Simpan gambar baru dengan nama yang sama seperti fungsi store()
+            $image = $request->file('image');
+            $imagePath = 'public/products/' . $product->id . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/products', $product->id . '.' . $image->getClientOriginalExtension());
+
+            // Simpan path yang benar di database
+            $product->image = 'storage/products/' . $product->id . '.' . $image->getClientOriginalExtension();
         }
 
         // Simpan perubahan ke database
