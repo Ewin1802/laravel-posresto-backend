@@ -206,6 +206,22 @@
 
     <script>
        $(document).ready(function () {
+        // Pastikan dropdown yang aktif tetap terbuka setelah reload
+        $('.nav-item.dropdown.active').find('.dropdown-menu').show();
+        $('.nav-link.has-dropdown').click(function (e) {
+            e.preventDefault();
+            let $parent = $(this).parent();
+            if ($parent.hasClass('active')) {
+                $parent.removeClass('active');
+                $parent.find('.dropdown-menu').slideUp(200);
+            } else {
+                $('.nav-item.dropdown').removeClass('active');
+                $('.dropdown-menu').slideUp(200);
+                $parent.addClass('active');
+                $parent.find('.dropdown-menu').slideDown(200);
+            }
+        });
+
         $('.view-details').click(function () {
             let orderId = $(this).data('id');
             $('#order-id').text(orderId);

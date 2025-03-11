@@ -135,6 +135,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        // Pastikan dropdown yang aktif tetap terbuka setelah reload
+        $('.nav-item.dropdown.active').find('.dropdown-menu').show();
+
+        $('.nav-link.has-dropdown').click(function (e) {
+            e.preventDefault();
+            let $parent = $(this).parent();
+            if ($parent.hasClass('active')) {
+                $parent.removeClass('active');
+                $parent.find('.dropdown-menu').slideUp(200);
+            } else {
+                $('.nav-item.dropdown').removeClass('active');
+                $('.dropdown-menu').slideUp(200);
+                $parent.addClass('active');
+                $parent.find('.dropdown-menu').slideDown(200);
+            }
+        });
         var ctx = document.getElementById('productChart').getContext('2d');
         var productChart = new Chart(ctx, {
             type: 'bar',
