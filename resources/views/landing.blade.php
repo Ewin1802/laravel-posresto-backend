@@ -34,7 +34,7 @@
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 5rem;
             font-weight: 700;
             text-transform: uppercase;
         }
@@ -102,8 +102,9 @@
 
     <section class="hero">
         <div class="hero-text">
-            <h1>HELLO, BOS WANTO !</h1>
-            <p>Semoga Penjualan hari ini meningkat dan cepat Kaya. Huhuy...</p>
+            <h1>HELLO,</h1>
+            <h1>BOS WANTO !</h1>
+            <p>Semoga Penjualan hari ini meningkat dan cepat kaya. Aminnn</p>
             <a href="{{ route('login') }}" class="btn-custom">Login</a>
         </div>
         <img src="{{ asset('img/logo_arch_landing.png') }}" alt="Digital Art">
