@@ -205,76 +205,74 @@
     </script>
 
     <script>
-       $(document).ready(function () {
-        // Pastikan dropdown yang aktif tetap terbuka setelah reload
-        $('.nav-item.dropdown.active').find('.dropdown-menu').show();
-        $('.nav-link.has-dropdown').click(function (e) {
-            e.preventDefault();
-            let $parent = $(this).parent();
-            if ($parent.hasClass('active')) {
-                $parent.removeClass('active');
-                $parent.find('.dropdown-menu').slideUp(200);
-            } else {
-                $('.nav-item.dropdown').removeClass('active');
-                $('.dropdown-menu').slideUp(200);
-                $parent.addClass('active');
-                $parent.find('.dropdown-menu').slideDown(200);
-            }
-        });
-
-        $('.view-details').click(function () {
-            let orderId = $(this).data('id');
-            $('#order-id').text(orderId);
-            $('#order-items').html('');
-            $('#customer-name').text('');
-            $('#total-bayar').text(''); // Reset total bayar
-
-            $.ajax({
-                url: `/orders/${orderId}`,
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    if (response.order) {
-                        $('#customer-name').text(response.order.customer_name);
-
-                        let totalBayar = 0; // Inisialisasi total pembayaran
-
-                        if (response.items.length > 0) {
-                            response.items.forEach(item => {
-                                let totalItem = parseFloat(item.total.replace(/,/g, '')); // Konversi string ke angka
-                                totalBayar += totalItem;
-
-                                $('#order-items').append(`
-                                    <tr>
-                                        <td>${item.product_name}</td>
-                                        <td>${item.quantity}</td>
-                                        <td>${item.price}</td>
-                                        <td>${item.total}</td>
-                                    </tr>
-                                `);
-                            });
-
-                            // Format total bayar dengan 2 desimal dan ribuan separator
-                            $('#total-bayar').text(new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2 }).format(totalBayar));
-                        } else {
-                            $('#order-items').html('<tr><td colspan="4" class="text-center">Tidak ada item dalam pesanan ini.</td></tr>');
-                            $('#total-bayar').text('0.00');
-                        }
-
-                        $('#orderDetailModal').modal('show');
-                    } else {
-                        alert('Data pesanan tidak ditemukan.');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert('Gagal mengambil data pesanan.');
+        $(document).ready(function () {
+            // Pastikan dropdown yang aktif tetap terbuka setelah reload
+            $('.nav-item.dropdown.active').find('.dropdown-menu').show();
+            $('.nav-link.has-dropdown').click(function (e) {
+                e.preventDefault();
+                let $parent = $(this).parent();
+                if ($parent.hasClass('active')) {
+                    $parent.removeClass('active');
+                    $parent.find('.dropdown-menu').slideUp(200);
+                } else {
+                    $('.nav-item.dropdown').removeClass('active');
+                    $('.dropdown-menu').slideUp(200);
+                    $parent.addClass('active');
+                    $parent.find('.dropdown-menu').slideDown(200);
                 }
             });
+
+            $('.view-details').click(function () {
+                let orderId = $(this).data('id');
+                $('#order-id').text(orderId);
+                $('#order-items').html('');
+                $('#customer-name').text('');
+                $('#total-bayar').text(''); // Reset total bayar
+
+                $.ajax({
+                    url: `/orders/${orderId}`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.order) {
+                            $('#customer-name').text(response.order.customer_name);
+
+                            let totalBayar = 0; // Inisialisasi total pembayaran
+
+                            if (response.items.length > 0) {
+                                response.items.forEach(item => {
+                                    let totalItem = parseFloat(item.total.replace(/,/g, '')); // Konversi string ke angka
+                                    totalBayar += totalItem;
+
+                                    $('#order-items').append(`
+                                        <tr>
+                                            <td>${item.product_name}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>${item.price}</td>
+                                            <td>${item.total}</td>
+                                        </tr>
+                                    `);
+                                });
+
+                                // Format total bayar dengan 2 desimal dan ribuan separator
+                                $('#total-bayar').text(new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2 }).format(totalBayar));
+                            } else {
+                                $('#order-items').html('<tr><td colspan="4" class="text-center">Tidak ada item dalam pesanan ini.</td></tr>');
+                                $('#total-bayar').text('0.00');
+                            }
+
+                            $('#orderDetailModal').modal('show');
+                        } else {
+                            alert('Data pesanan tidak ditemukan.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('Gagal mengambil data pesanan.');
+                    }
+                });
+            });
         });
-    });
-
-
     </script>
 
 @endpush

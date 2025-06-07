@@ -9,10 +9,10 @@ use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
-    //save order
+
     // public function saveOrder(Request $request)
     // {
-    //     //validate request
+    //     // Validate request
     //     $request->validate([
     //         'payment_amount' => 'required',
     //         'sub_total' => 'required',
@@ -27,21 +27,23 @@ class OrderController extends Controller
     //         'nama_kasir' => 'required',
     //         'transaction_time' => 'required',
     //         'customer_name' => 'nullable|string',
-    //         'order_items' => 'required|array',
-    //         'is_open' => 'required|boolean', // Menandakan apakah transaksi open
     //     ]);
 
-    //     // Tentukan open_date
-    //     $openDate = null;
-    //     if ($request->is_open) {
-    //         // Jika transaksi masih open, gunakan tanggal dari sesi aktif
-    //         $openDate = $this->getCurrentOpenDate($request->id_kasir); // Implementasikan metode ini di langkah berikut
-    //     } else {
-    //         // Jika tidak ada sesi aktif, gunakan tanggal sekarang
-    //         $openDate = now()->toDateString();
+    //     // Cek apakah order dengan transaction_time yang sama sudah ada
+    //     $existingOrder = Order::where('transaction_time', $request->transaction_time)
+    //                           ->where('id_kasir', $request->id_kasir) // Optional: untuk memastikan per kasir
+    //                           ->first();
+
+    //     if ($existingOrder) {
+    //         // Jika ingin menimpa data yang lama, kita bisa update di sini
+    //         return response()->json([
+    //             'status' => 'exists',
+    //             'message' => 'Order already exists, ignoring duplicate entry.',
+    //             'data' => $existingOrder
+    //         ], 200);
     //     }
 
-    //     //create order
+    //     // Jika order belum ada, buat order baru
     //     $order = Order::create([
     //         'payment_amount' => $request->payment_amount,
     //         'sub_total' => $request->sub_total,
@@ -56,11 +58,9 @@ class OrderController extends Controller
     //         'nama_kasir' => $request->nama_kasir,
     //         'transaction_time' => $request->transaction_time,
     //         'customer_name' => $request->customer_name ?? null,
-    //         'open_date' => $openDate, // Tambahkan open_date
-    //         'is_closed' => false,    // Default order masih open
     //     ]);
 
-    //     //create order items
+    //     // Tambahkan order items
     //     foreach ($request->order_items as $item) {
     //         OrderItem::create([
     //             'order_id' => $order->id,
@@ -76,11 +76,9 @@ class OrderController extends Controller
     //     ], 200);
     // }
 
-
-
     public function saveOrder(Request $request)
     {
-        // Validate request
+        // Validasi request
         $request->validate([
             'payment_amount' => 'required',
             'sub_total' => 'required',
@@ -95,15 +93,17 @@ class OrderController extends Controller
             'nama_kasir' => 'required',
             'transaction_time' => 'required',
             'customer_name' => 'nullable|string',
+            'order_items' => 'required|array',
         ]);
 
-        // Cek apakah order dengan transaction_time yang sama sudah ada
+        // Cek duplikasi hanya berdasarkan transaction_time + customer_name (jika ada)
         $existingOrder = Order::where('transaction_time', $request->transaction_time)
-                              ->where('id_kasir', $request->id_kasir) // Optional: untuk memastikan per kasir
-                              ->first();
+                            ->when($request->filled('customer_name'), function ($query) use ($request) {
+                                return $query->where('customer_name', $request->customer_name);
+                            })
+                            ->first();
 
         if ($existingOrder) {
-            // Jika ingin menimpa data yang lama, kita bisa update di sini
             return response()->json([
                 'status' => 'exists',
                 'message' => 'Order already exists, ignoring duplicate entry.',
@@ -111,7 +111,7 @@ class OrderController extends Controller
             ], 200);
         }
 
-        // Jika order belum ada, buat order baru
+        // Buat order baru
         $order = Order::create([
             'payment_amount' => $request->payment_amount,
             'sub_total' => $request->sub_total,
@@ -128,7 +128,7 @@ class OrderController extends Controller
             'customer_name' => $request->customer_name ?? null,
         ]);
 
-        // Tambahkan order items
+        // Simpan order items
         foreach ($request->order_items as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
@@ -143,6 +143,7 @@ class OrderController extends Controller
             'data' => $order
         ], 200);
     }
+
 
     public function index(Request $request)
     {
