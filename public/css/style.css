@@ -79,6 +79,10 @@ a:not(.btn-social-icon):not(.btn-social):not(.page-link) .fab {
   margin-left: 4px;
 }
 
+.modal-lg-custom {
+    max-width: 900px; /* atau sesuaikan dengan kebutuhan */
+}
+
 .bg-primary {
   background-color: #3d585f !important;
 }
