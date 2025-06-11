@@ -134,36 +134,54 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
-    <script>
-        // Pastikan dropdown yang aktif tetap terbuka setelah reload
-        $('.nav-item.dropdown.active').find('.dropdown-menu').show();
+    <script defer>
+        window.addEventListener('DOMContentLoaded', function () {
+            // Dropdown menu logic (biar tetap terbuka setelah reload)
+            document.querySelectorAll('.nav-link.has-dropdown').forEach(function (el) {
+                el.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const parent = this.closest('.nav-item.dropdown');
 
-        $('.nav-link.has-dropdown').click(function (e) {
-            e.preventDefault();
-            let $parent = $(this).parent();
-            if ($parent.hasClass('active')) {
-                $parent.removeClass('active');
-                $parent.find('.dropdown-menu').slideUp(200);
+                    document.querySelectorAll('.nav-item.dropdown').forEach(function (item) {
+                        if (item !== parent) {
+                            item.classList.remove('active');
+                            const menu = item.querySelector('.dropdown-menu');
+                            if (menu) menu.style.display = 'none';
+                        }
+                    });
+
+                    if (parent.classList.contains('active')) {
+                        parent.classList.remove('active');
+                        const menu = parent.querySelector('.dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    } else {
+                        parent.classList.add('active');
+                        const menu = parent.querySelector('.dropdown-menu');
+                        if (menu) menu.style.display = 'block';
+                    }
+                });
+            });
+
+            // Inisialisasi Chart.js
+            const ctx = document.getElementById('productChart')?.getContext('2d');
+            if (ctx && window.Chart) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($chartData['labels']),
+                        datasets: [{
+                            label: 'Jumlah Dipesan',
+                            data: @json($chartData['data']),
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    }
+                });
             } else {
-                $('.nav-item.dropdown').removeClass('active');
-                $('.dropdown-menu').slideUp(200);
-                $parent.addClass('active');
-                $parent.find('.dropdown-menu').slideDown(200);
-            }
-        });
-        var ctx = document.getElementById('productChart').getContext('2d');
-        var productChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: @json($chartData['labels']),
-                datasets: [{
-                    label: 'Jumlah Dipesan',
-                    data: @json($chartData['data']),
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
+                console.warn('Chart.js belum siap atau canvas tidak ditemukan.');
             }
         });
     </script>
 @endpush
+
