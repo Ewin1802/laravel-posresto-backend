@@ -132,7 +132,7 @@
 
 @push('scripts')
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
     <script>
         // Pastikan dropdown yang aktif tetap terbuka setelah reload

@@ -76,19 +76,20 @@
                     <span>Laporan</span>
                 </a>
                 <ul class="dropdown-menu">
+
                     <li class="nav-item {{ Request::is('orde*') ? 'active' : '' }}">
                         <a href="{{ route('order_reports.index') }}" class="nav-link">
-                            <i class="fas fa-receipt"></i><span>Laporan Order</span>
+                            <i class="fas fa-coins"></i><span>Laporan Order</span>
                         </a>
                     </li>
                     <li class="nav-item {{ Request::is('top*') ? 'active' : '' }}">
                         <a href="{{ route('top.products') }}" class="nav-link">
-                            <i class="fas fa-box"></i><span>Laporan Produk</span>
+                            <i class="fas fa-boxes-stacked"></i><span>Laporan Produk</span>
                         </a>
                     </li>
                     <li class="nav-item {{ Request::is('inventory-reports*') ? 'active' : '' }}">
                         <a href="{{ route('inventory.reports') }}" class="nav-link">
-                            <i class="fas fa-coins"></i><span>Laporan Persediaan</span>
+                            <i class="fas fa-receipt"></i><span>Laporan Persediaan</span>
                         </a>
                     </li>
                     <li class="nav-item {{ Request::is('laporan-keuangan*') ? 'active' : '' }}">
