@@ -173,39 +173,6 @@
     {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
-    {{-- <script>
-        // Chart.js for summary visualization
-        const ctx = document.getElementById('summaryChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Payment Amount', 'Discount', 'Tax', 'Subtotal', 'Service Charge', 'Total'],
-                datasets: [{
-                    label: 'Summary',
-                    data: [
-                        {{ $summary['total_revenue'] }},
-                        {{ $summary['total_discount'] }},
-                        {{ $summary['total_tax'] }},
-                        {{ $summary['total_subtotal'] }},
-                        {{ $summary['total_service_charge'] }},
-                        {{ $summary['total'] }}
-                    ],
-                    backgroundColor: ['#007bff', '#28a745', '#ffc107', '#17a2b8', '#6f42c1', '#dc3545'],
-                    borderColor: ['#0056b3', '#1e7e34', '#d39e00', '#117a8b', '#563d7c', '#c82333'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script> --}}
-
     <script>
         $(document).ready(function () {
             const ctx = document.getElementById('summaryChart').getContext('2d');
