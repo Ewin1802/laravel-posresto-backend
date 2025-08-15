@@ -178,7 +178,7 @@
   <div id="welcomeModal">
     <h1 class="neon" style="font-size: 2.2rem; margin-bottom: 20px;">Selamat Datang di Arch Coffee</h1>
     <p style="max-width: 420px; margin-bottom: 28px; color: var(--muted);">Klik tombol di bawah untuk memulai pengalaman Anda.</p>
-    <button id="enterBtn">Masuk</button>
+    <button id="enterBtn">Mulai</button>
   </div>
 
   <!-- Audio -->
