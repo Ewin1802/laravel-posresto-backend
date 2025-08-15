@@ -181,7 +181,7 @@
     <div class="hero-inner">
       <!-- Text -->
       <div class="hero-text" data-aos="fade-right">
-        <h1 class="hero-title neon">HELLO,<br/>Coffee Lovers!</h1>
+        <h1 class="hero-title neon">HELLO,Coffee Lovers!</h1>
         <p class="hero-sub">
           Nikmati kopi istimewa sambil memandang ombak dan merasakan semilir angin laut di Arch Coffee.
           Cocok untuk bekerja, bersantai, atau berkumpul bersama teman. Kami juga menyajikan hidangan ringan hingga makanan berat untuk melengkapi waktu santai Anda.<Br><Br>Lokasi di Kompleks Wisata Pantai Batu Pinagut Kabupaten Bolaang Mongondow Utara. Scroll ke bawah untuk melihat lokasi Kami di peta.
