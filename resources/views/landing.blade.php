@@ -183,9 +183,8 @@
       <div class="hero-text" data-aos="fade-right">
         <h1 class="hero-title neon">HELLO,<br/>BOS WANTO!</h1>
         <p class="hero-sub">
-          Arch Coffee adalah tempat nongkrong nyaman yang menyajikan berbagai pilihan kopi berkualitas dan menu makanan lezat.
-          Cocok untuk bekerja, bersantai, atau berkumpul bersama teman. Kami menggunakan biji kopi pilihan,
-          serta menyajikan hidangan ringan hingga makanan berat untuk melengkapi waktu santai Anda.<Br><Br>Lokasi di Kompleks Wisata Pantai Batu Pinagut Kabupaten Bolaang Mongondow Utara. Scroll ke bawah untuk melihat lokasi kami di peta.
+          Nikmati kopi istimewa sambil memandang ombak dan merasakan semilir angin laut di Arch Coffee.
+          Cocok untuk bekerja, bersantai, atau berkumpul bersama teman. Kami juga menyajikan hidangan ringan hingga makanan berat untuk melengkapi waktu santai Anda.<Br><Br>Lokasi di Kompleks Wisata Pantai Batu Pinagut Kabupaten Bolaang Mongondow Utara. Scroll ke bawah untuk melihat lokasi Kami di peta.
         </p>
         <a href="{{ route('login') }}" class="btn-cta" id="loginBtn">Login</a>
       </div>
