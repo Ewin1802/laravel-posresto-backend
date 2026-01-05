@@ -88,6 +88,12 @@ body{
   font-weight:700;
   letter-spacing:.12em;
 }
+
+.brand-white{
+  color:#ffffff;
+  margin-left:6px;
+}
+
 .nav-actions{
   display:flex;
   align-items:center;
@@ -209,6 +215,39 @@ table{
 th,td{padding:16px;text-align:left}
 th{background:rgba(199,164,90,.2);color:var(--gold)}
 tr:not(:last-child){border-bottom:1px solid rgba(255,255,255,.08)}
+/* ===== RANK BADGE ===== */
+.rank-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  height:34px;
+  border-radius:50%;
+  font-weight:600;
+  font-size:.9rem;
+}
+
+.rank-1{
+  background:linear-gradient(135deg,#FFD700,#E6B800);
+  color:#2a1b12;
+  box-shadow:0 0 10px rgba(255,215,0,.5);
+}
+
+.rank-2{
+  background:linear-gradient(135deg,#E0E0E0,#BDBDBD);
+  color:#2a1b12;
+}
+
+.rank-3{
+  background:linear-gradient(135deg,#CD7F32,#A05A2C);
+  color:#fff;
+}
+
+.rank-default{
+  background:rgba(255,255,255,.12);
+  color:var(--text);
+}
+
 
 /* ===== MAP ===== */
 .map-wrap{padding:50px 22px 80px}
@@ -253,7 +292,11 @@ footer{
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <div class="brand gold">ARCH COFFEE MANAJEMEN</div>
+    <div class="brand">
+    <span class="gold">ARCH COFFEE -</span>
+    <span class="brand-white">MANAJEMEN</span>
+    </div>
+
     <div class="nav-actions">
       <div class="dropdown" id="infoDropdown">
         <button class="dropdown-btn">Informasi ▾</button>
@@ -305,7 +348,18 @@ footer{
       <tbody>
         @forelse($topProducts as $i=>$item)
         <tr>
-          <td>{{ $i+1 }}</td>
+          <td>
+            @if($i === 0)
+                <span class="rank-badge rank-1">1</span>
+            @elseif($i === 1)
+                <span class="rank-badge rank-2">2</span>
+            @elseif($i === 2)
+                <span class="rank-badge rank-3">3</span>
+            @else
+                <span class="rank-badge rank-default">{{ $i + 1 }}</span>
+            @endif
+            </td>
+
           <td>{{ $item->name }}</td>
           <td>{{ $item->total_qty }}</td>
           <td>Rp {{ number_format($item->unit_price,0,',','.') }}</td>
