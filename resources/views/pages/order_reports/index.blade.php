@@ -92,6 +92,16 @@
                                                 <span>{{ number_format($summary['total_service_charge'], 2) }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Pembayaran Cash
+                                                <span>{{ number_format($summary['total_cash'], 2) }}</span>
+                                            </li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Pembayaran Transfer
+                                                <span>{{ number_format($summary['total_transfer'], 2) }}</span>
+                                            </li>
+
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 Total (Fulus Bersih)
                                                 <span>{{ number_format($summary['total'], 2) }}</span>
                                             </li>
@@ -115,15 +125,16 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Order ID</th>
+                                            {{-- <th>Order ID</th> --}}
                                             <th>Nama Pengunjung</th>
                                             <th>Bayar</th>
                                             <th>Diskon</th>
                                             <th>Pajak</th>
                                             {{-- <th>Service Charge</th> --}}
                                             <th>Subtotal</th>
-                                            <th>Date</th>
-                                            <th>Waktu Garida</th>
+                                            <th>Metode</th>
+                                            <th>Tanggal & Waktu</th>
+
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -139,15 +150,37 @@
                                             @foreach ($orders as $order)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $order->id }}</td>
+                                                    {{-- <td>{{ $order->id }}</td> --}}
                                                     <td>{{ $order->customer_name }}</td>
                                                     <td>{{ number_format($order->payment_amount, 2) }}</td>
                                                     <td>{{ number_format($order->discount_amount, 2) }}</td>
                                                     <td>{{ number_format($order->tax, 2) }}</td>
                                                     {{-- <td>{{ number_format($order->service_charge, 2) }}</td> --}}
                                                     <td>{{ number_format($order->sub_total, 2) }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('Y-m-d') }}</td> <!-- Tanggal -->
-                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->addHours(2)->format('H:i:s') }}</td> <!-- Waktu Garida (+2 Jam) -->
+                                                    <td>
+                                                        @php
+                                                            $method = strtolower($order->payment_method);
+                                                        @endphp
+
+                                                        @if ($method === 'cash')
+                                                            <span class="badge badge-success">Cash</span>
+                                                        @elseif ($method === 'transfer')
+                                                            <span class="badge badge-primary">Transfer</span>
+                                                        @else
+                                                            <span class="badge badge-secondary">
+                                                                {{ ucfirst($order->payment_method) }}
+                                                            </span>
+                                                        @endif
+                                                    </td>
+
+                                                    {{-- <td>{{ \Carbon\Carbon::parse($order->transaction_time)->format('Y-m-d') }}</td> <!-- Tanggal -->
+                                                    <td>{{ \Carbon\Carbon::parse($order->transaction_time)->addHours(2)->format('H:i:s') }}</td> <!-- Waktu Garida (+2 Jam) --> --}}
+                                                    <td>
+                                                        {{ \Carbon\Carbon::parse($order->transaction_time)
+                                                            ->addHours(2)
+                                                            ->format('Y-m-d H:i:s') }}
+                                                    </td>
+
                                                     <td>
                                                         <button class="btn btn-info btn-sm view-details" data-id="{{ $order->id }}">Detail</button>
                                                     </td>

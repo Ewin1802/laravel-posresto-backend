@@ -54,14 +54,16 @@
                                 <div class="table-responsive">
                                     <table class="table-striped table">
                                         <tr>
-
+                                            <th>No</th>
                                             <th>Name</th>
                                             <th>Create At</th>
                                             <th>Action</th>
                                         </tr>
                                         @foreach ($categories as $category)
                                             <tr>
-
+                                                <td>
+                                                    {{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}
+                                                </td>
                                                 <td>{{ $category->name }}
                                                 </td>
 

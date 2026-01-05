@@ -32,14 +32,35 @@ class OrderController extends Controller
         $orders = $query->get();
 
         // Pastikan $summary didefinisikan sebelum dikirim ke View
+        // $summary = [
+        //     'total_revenue' => $query->sum('payment_amount'),
+        //     'total_discount' => $query->sum('discount_amount'),
+        //     'total_tax' => $query->sum('tax'),
+        //     'total_subtotal' => $query->sum('sub_total'),
+        //     'total_service_charge' => $query->sum('service_charge'),
+        //     'total' => $query->sum('sub_total') - $query->sum('discount_amount') - $query->sum('tax') + $query->sum('service_charge'),
+        // ];
         $summary = [
             'total_revenue' => $query->sum('payment_amount'),
             'total_discount' => $query->sum('discount_amount'),
             'total_tax' => $query->sum('tax'),
             'total_subtotal' => $query->sum('sub_total'),
             'total_service_charge' => $query->sum('service_charge'),
-            'total' => $query->sum('sub_total') - $query->sum('discount_amount') - $query->sum('tax') + $query->sum('service_charge'),
+            'total' => $query->sum('sub_total')
+                - $query->sum('discount_amount')
+                - $query->sum('tax')
+                + $query->sum('service_charge'),
+
+            // 🔽 INI YANG BARU (PASTI TER-FILTER TANGGAL)
+            'total_cash' => (clone $query)
+                ->where('payment_method', 'cash')
+                ->sum('payment_amount'),
+
+            'total_transfer' => (clone $query)
+                ->where('payment_method', 'transfer')
+                ->sum('payment_amount'),
         ];
+
 
         // Data untuk grafik ringkasan (JSON)
         $chartSummary = [

@@ -19,7 +19,7 @@
 
         /* Styling header tabel */
         .styled-table thead {
-            background-color: #3d585f;
+            background-color: #5c2c08;
             color: white;
         }
 
@@ -44,7 +44,7 @@
 
         /* Pemisah antar bahan tanpa baris kosong */
         .separator td {
-            border-top: 3px solid #3d585f !important; /* Garis pemisah antar bahan */
+            border-top: 3px solid #5c2c08 !important; /* Garis pemisah antar bahan */
         }
     </style>
 @endpush
