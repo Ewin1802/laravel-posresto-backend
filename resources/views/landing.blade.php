@@ -271,6 +271,65 @@ footer{
   .hero-visual{order:-1;max-width:88%}
   .hero-text{text-align:center}
 }
+
+/* ===== PRODUCT SLIDER ===== */
+.product-slider{
+  width:100%;
+  height:70vh;
+  position:relative;
+  overflow:hidden;
+}
+
+.slider-wrapper{
+  width:100%;
+  height:100%;
+  position:relative;
+}
+
+.slide{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  opacity:0;
+  transform:scale(1.05);
+  transition:opacity 1s ease, transform 1.2s ease;
+}
+
+.slide.active{
+  opacity:1;
+  transform:scale(1);
+  z-index:1;
+}
+
+.slide-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding-left:8%;
+  background:linear-gradient(
+    90deg,
+    rgba(20,13,9,.75),
+    rgba(20,13,9,.15),
+    transparent
+  );
+}
+
+.slide-overlay h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.4rem,4vw,4rem);
+  color:var(--gold);
+}
+
+.slide-overlay p{
+  font-size:1.4rem;
+  margin-top:12px;
+  color:#fff;
+}
+
+
 </style>
 </head>
 
@@ -310,6 +369,24 @@ footer{
     </div>
   </div>
 </nav>
+
+<!-- PRODUCT SLIDER -->
+<section class="product-slider">
+  <div class="slider-wrapper">
+
+    @foreach($sliderProducts as $index => $product)
+      <div class="slide {{ $index == 0 ? 'active' : '' }}"
+           style="background-image:url('{{ asset('storage/'.$product->image) }}')">
+        <div class="slide-overlay">
+          <h2>{{ $product->name }}</h2>
+          <p>Rp {{ number_format($product->price,0,',','.') }}</p>
+        </div>
+      </div>
+    @endforeach
+
+  </div>
+</section>
+
 
 <!-- HERO -->
 <section class="hero">
@@ -416,6 +493,18 @@ dropdown.querySelectorAll('.dropdown-menu a').forEach(link => {
   link.addEventListener('click', () => dropdown.classList.remove('active'));
 });
 </script>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+let currentSlide = 0;
+
+setInterval(() => {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = (currentSlide + 1) % slides.length;
+  slides[currentSlide].classList.add('active');
+}, 5000);
+</script>
+
 
 </body>
 </html>

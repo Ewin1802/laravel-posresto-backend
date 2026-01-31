@@ -30,7 +30,14 @@ class LandingController extends Controller
             ->orderByDesc('total_qty')
             ->limit(10)
             ->get();
+        $sliderProducts = DB::table('products')
+            ->where('status', 1)
+            ->whereNotNull('image')
+            ->orderBy('is_favorite', 'desc') // produk favorit di depan
+            ->limit(5)
+            ->get();
 
-        return view('landing', compact('topProducts', 'range'));
+
+        return view('landing', compact('topProducts', 'range', 'sliderProducts'));
     }
 }
