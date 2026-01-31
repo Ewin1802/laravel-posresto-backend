@@ -43,7 +43,7 @@ class LandingController extends Controller
         ->where('status', 1)
         ->whereNotNull('image')
         ->orderBy('is_favorite', 'desc')
-        ->limit(5)
+        ->limit(20)
         ->get();
 
     return view('landing', compact(
