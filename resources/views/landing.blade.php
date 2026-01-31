@@ -68,13 +68,16 @@ body{
 
 /* ===== NAV ===== */
 .nav{
-  position:sticky;
+  position:fixed;           /* BUKAN sticky */
   top:0;
-  z-index:50;
+  left:0;
+  width:100%;
+  z-index:100;
   backdrop-filter:blur(10px);
-  background:rgba(20,13,9,.65);
-  border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(10,6,4,.25); /* transparan elegan */
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
+
 .nav-inner{
   max-width:1200px;
   margin:auto;
@@ -146,27 +149,46 @@ body{
 
 /* ===== HERO ===== */
 .hero{
-  min-height:89vh;
-  padding:60px 22px 40px;
-  display:flex;
-  align-items:center;
+  min-height:auto;
+  padding:0 22px 60px;   /* HAPUS padding atas */
+  margin-top:-180px;    /* TARIK NAIK ke slider */
+  position:relative;
+  z-index:5;
+margin-bottom:-40px; /* tarik produk terlaris naik */
 }
+
 .hero-inner{
-  max-width:1200px;
+  max-width:100%;        /* HAPUS BATAS */
   margin:auto;
+  padding:0 6vw;         /* spacing responsif */
   display:flex;
   gap:42px;
-  flex-wrap:wrap;
   align-items:center;
-  justify-content:space-between;
+  justify-content:flex-start;
 }
-.hero-text{flex:1 1 480px}
+
+/* .hero-text{flex:1 1 480px} */
+.hero-text{
+  max-width:900px; /* biar ga kepanjangan */
+  background:rgba(20,13,9,.55);
+  backdrop-filter:blur(8px);
+  padding:36px 42px;
+  border-radius:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+}
+
+
 .hero-title{
   font-family:'Playfair Display',serif;
   font-size:clamp(2.6rem,4vw + 1rem,4.8rem);
   line-height:1.05;
 }
-.hero-sub{color:var(--muted);line-height:1.8}
+.hero-sub{
+  color:var(--muted);
+  line-height:1.6;
+  margin-top:18px;
+}
+
 
 .hero-visual{
   flex:0 0 auto;
@@ -183,7 +205,10 @@ body{
 .logo-img{width:100%;border-radius:14px;display:block}
 
 /* ===== TOP PRODUCTS ===== */
-.top-products{padding:60px 22px}
+.top-products{
+  padding:20px 22px 60px; /* sebelumnya 60px 22px */
+}
+
 .top-products-inner{max-width:1200px;margin:auto;text-align:center}
 
 .filter-range{
@@ -275,9 +300,23 @@ footer{
 /* ===== PRODUCT SLIDER ===== */
 .product-slider{
   width:100%;
-  height:70vh;
+  height:100vh;
   position:relative;
   overflow:hidden;
+}
+.product-slider::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:220px;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,0),
+    rgba(26,18,13,1)
+  );
+  z-index:2;
 }
 
 .slider-wrapper{
@@ -376,7 +415,7 @@ footer{
 
     @foreach($sliderProducts as $index => $product)
       <div class="slide {{ $index == 0 ? 'active' : '' }}"
-           style="background-image:url('{{ asset('storage/'.$product->image) }}')">
+           style="background-image:url('{{ asset($product->image) }}')">
         <div class="slide-overlay">
           <h2>{{ $product->name }}</h2>
           <p>Rp {{ number_format($product->price,0,',','.') }}</p>
@@ -392,18 +431,18 @@ footer{
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text" data-aos="fade-right">
-      <h1 class="hero-title gold">Hi,<br/>Coffee Lovers!</h1>
-      <p class="hero-sub">
-        Nikmati kopi istimewa sambil memandang ombak dan merasakan semilir angin laut di Arch Coffee.
-        <br><br>
-        Lokasi di Kompleks Wisata Pantai Batu Pinagut Kabupaten Bolaang Mongondow Utara.
-      </p>
+        <h1 class="hero-title gold">Hi, Coffee Lovers!</h1>
+        <p class="hero-sub">
+            Nikmati kopi istimewa sambil memandang ombak dan merasakan semilir angin laut di Arch Coffee. Lokasi di Kompleks Wisata Pantai Batu Pinagut Kabupaten Bolaang Mongondow Utara.
+        </p>
     </div>
-    <div class="hero-visual" data-aos="fade-left">
+
+    {{-- <div class="hero-visual" data-aos="fade-left">
       <div class="logo-panel">
         <img src="{{ asset('img/logo_arch_landing.png') }}" alt="Logo Arch Coffee" class="logo-img"/>
       </div>
-    </div>
+    </div> --}}
+
   </div>
 </section>
 
