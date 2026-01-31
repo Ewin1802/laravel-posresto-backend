@@ -206,7 +206,7 @@ margin-bottom:-40px; /* tarik produk terlaris naik */
 
 /* ===== TOP PRODUCTS ===== */
 .top-products{
-  padding:20px 22px 60px; /* sebelumnya 60px 22px */
+  padding:20px 22px 24px;
 }
 
 .top-products-inner{max-width:1200px;margin:auto;text-align:center}
@@ -275,7 +275,14 @@ tr:not(:last-child){border-bottom:1px solid rgba(255,255,255,.08)}
 
 
 /* ===== MAP ===== */
-.map-wrap{padding:50px 22px 80px}
+.map-wrap{
+  padding:24px 22px 60px;
+}
+.map-wrap h2{
+  margin-top:0;
+  margin-bottom:18px;
+}
+
 .map-frame{
   width:100%;
   height:460px;
@@ -350,9 +357,10 @@ footer{
   padding-left:8%;
   background:linear-gradient(
     90deg,
-    rgba(20,13,9,.75),
-    rgba(20,13,9,.15),
-    transparent
+    rgba(10,6,4,.88) 0%,   /* LEBIH GELAP */
+    rgba(10,6,4,.55) 35%,
+    rgba(10,6,4,.15) 60%,
+    transparent 100%
   );
 }
 
@@ -360,11 +368,64 @@ footer{
   font-family:'Playfair Display',serif;
   font-size:clamp(2.4rem,4vw,4rem);
   color:var(--gold);
+  text-shadow:
+    0 2px 6px rgba(0,0,0,.8),
+    0 6px 18px rgba(0,0,0,.6);
 }
 
 .slide-overlay p{
-  font-size:1.4rem;
-  margin-top:12px;
+  font-size:1.5rem;
+  font-weight:600;
+  color:#fff;
+  text-shadow:
+    0 2px 6px rgba(0,0,0,.85);
+}
+.slide-content{
+  position:absolute;
+  left:8%;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:5; /* PASTIKAN DI ATAS SEMUA */
+
+  max-width:420px;
+  padding:28px 32px;
+  background:rgba(20,13,9,.65);
+  backdrop-filter:blur(6px);
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.6);
+}
+
+.top-badge{
+  position:absolute;
+  top:-14px;
+  left:-14px;
+  padding:8px 14px;
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.08em;
+  border-radius:12px;
+  backdrop-filter:blur(6px);
+  box-shadow:0 8px 24px rgba(0,0,0,.45);
+}
+
+/* 🥇 TOP 1 */
+.top-1{
+  background:linear-gradient(135deg,#FFD700,#E6B800);
+  color:#2a1b12;
+  box-shadow:
+    0 0 14px rgba(255,215,0,.8),
+    0 10px 30px rgba(0,0,0,.5);
+}
+
+/* 🥈 TOP 2 */
+.top-2{
+  background:linear-gradient(135deg,#E0E0E0,#BDBDBD);
+  color:#2a1b12;
+}
+
+/* 🥉 TOP 3 */
+.top-3{
+  background:linear-gradient(135deg,#CD7F32,#A05A2C);
   color:#fff;
 }
 
@@ -413,15 +474,28 @@ footer{
 <section class="product-slider">
   <div class="slider-wrapper">
 
-    @foreach($sliderProducts as $index => $product)
-      <div class="slide {{ $index == 0 ? 'active' : '' }}"
-           style="background-image:url('{{ asset($product->image) }}')">
-        <div class="slide-overlay">
-          <h2>{{ $product->name }}</h2>
-          <p>Rp {{ number_format($product->price,0,',','.') }}</p>
-        </div>
-      </div>
-    @endforeach
+    @foreach($sliderProducts as $product)
+  <div class="slide {{ $loop->first ? 'active' : '' }}"
+       style="background-image:url('{{ asset($product->image) }}')">
+
+    <div class="slide-content">
+
+      @if(in_array($product->id, $topProductIds))
+          @php
+              $rank = array_search($product->id, $topProductIds) + 1;
+          @endphp
+
+          <div class="top-badge top-{{ $rank }}">
+              TOP {{ $rank }}
+          </div>
+      @endif
+
+      <h2>{{ $product->name }}</h2>
+      <p>Rp {{ number_format($product->price,0,',','.') }}</p>
+    </div>
+  </div>
+@endforeach
+
 
   </div>
 </section>
