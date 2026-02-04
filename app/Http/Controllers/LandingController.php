@@ -46,12 +46,25 @@ class LandingController extends Controller
         ->limit(20)
         ->get();
 
+    $menuProducts = DB::table('products')
+        ->where('status', 1)
+        ->orderBy('category_id')
+        ->orderBy('name')
+        ->get();
+    $categories = DB::table('categories')
+        ->orderBy('name')
+        ->get();
+
     return view('landing', compact(
         'topProducts',
         'sliderProducts',
         'topProductIds',
-        'range'
+        'range',
+        'menuProducts',
+        'categories' // ⬅️ TAMBAHAN
     ));
+
+
 }
 
 }

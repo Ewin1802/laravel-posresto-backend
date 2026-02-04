@@ -68,13 +68,18 @@ body{
 
 /* ===== NAV ===== */
 .nav{
-  position:fixed;           /* BUKAN sticky */
+  position:fixed;
   top:0;
   left:0;
   width:100%;
   z-index:100;
   backdrop-filter:blur(10px);
-  background:rgba(10,6,4,.25); /* transparan elegan */
+  background:linear-gradient(
+    180deg,
+    rgba(10,6,4,.75),
+    rgba(10,6,4,.35)
+  );
+  backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 
@@ -86,29 +91,110 @@ body{
   justify-content:space-between;
   align-items:center;
 }
-.brand{
-  font-family:'Playfair Display',serif;
-  font-weight:700;
-  letter-spacing:.12em;
-}
 
-.brand-white{
-  color:#ffffff;
-  margin-left:6px;
-}
-
-.nav-actions{
+/* ===== BRAND LOGO ===== */
+.brand-logo{
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:12px;
+  position:relative;
 }
+.brand-logo::after{
+  content:'';
+  position:absolute;
+  left:52px;              /* sejajar setelah logo */
+  bottom:-6px;            /* sedikit di bawah teks */
+  width:90px;             /* ⬅️ DIPENDEKKAN */
+  height:2px;
+  background:linear-gradient(
+    90deg,
+    rgba(199,164,90,.9),
+    rgba(199,164,90,.2),
+    transparent
+  );
+}
+
+.brand-img{
+  width:32px;              /* ⬅️ LEBIH TERLIHAT */
+  height:auto;
+  display:block;
+  filter:drop-shadow(0 0 6px rgba(199,164,90,.6));
+}
+.brand-text{
+  font-family:'Playfair Display',serif;
+  font-weight:700;
+  letter-spacing:.12em;    /* sedikit dikurangi */
+  font-size:1.15rem;       /* lebih balance */
+  line-height:1.1;
+  color:var(--gold);
+  text-shadow:
+    0 2px 6px rgba(0,0,0,.85),
+    0 0 10px rgba(199,164,90,.35);
+}
+
+/* HAMBURGER */
+.nav-toggle{
+  background:none;
+  border:none;
+  font-size:1.9rem;
+  color:#fff;
+  cursor:pointer;
+}
+.nav-toggle:hover{
+  color:var(--gold-soft);
+}
+
+/* MENU HAMBURGER */
+.nav-actions{
+  position:absolute;
+  top:100%;
+  right:22px;
+
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+
+  background:rgba(20,13,9,.96);
+  padding:20px;
+  border-radius:18px;
+  min-width:220px;
+
+  box-shadow:0 20px 40px rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.08);
+
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-10px);
+  transition:.25s ease;
+}
+
+.nav-actions.active{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.nav-actions a{
+  padding:10px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  color:var(--text);
+}
+
+.nav-actions a:hover{
+  background:rgba(199,164,90,.15);
+}
+
+/* LOGIN BUTTON */
 .nav-login{
-  padding:10px 22px;
-  border-radius:30px;
+  margin-top:6px;
+  text-align:center;
   font-weight:600;
+  border-radius:30px;
   background:linear-gradient(135deg,var(--gold),var(--gold-soft));
-  color:#2a1b12;
+  color:#2a1b12 !important;
 }
+
 
 /* Dropdown */
 .dropdown{position:relative}
@@ -429,6 +515,124 @@ footer{
   color:#fff;
 }
 
+@media(max-width:768px){
+  .brand-img{
+    width:22px;
+  }
+  .brand-text{
+    font-size:.8rem;
+  }
+}
+
+/* ===== MENU CAFE MODAL ===== */
+.menu-modal{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  display:none;
+}
+
+.menu-modal.active{
+  display:block;
+}
+
+.menu-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(10,6,4,.85);
+  backdrop-filter:blur(6px);
+}
+
+.menu-modal-content{
+  position:relative;
+  max-width:1100px;
+  margin:5vh auto;
+  background:rgba(20,13,9,.95);
+  border-radius:24px;
+  padding:32px;
+  max-height:90vh;
+  overflow:auto;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+
+.menu-modal h2{
+  margin-top:0;
+  margin-bottom:24px;
+  text-align:center;
+}
+
+.menu-modal-close{
+  position:absolute;
+  top:18px;
+  right:22px;
+  background:none;
+  border:none;
+  font-size:2rem;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* GRID MENU */
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:22px;
+}
+
+.menu-card{
+  background:rgba(255,255,255,.05);
+  border-radius:18px;
+  padding:16px;
+  text-align:center;
+}
+
+.menu-card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:14px;
+  margin-bottom:12px;
+}
+
+.menu-card h4{
+  margin:8px 0 4px;
+}
+
+.menu-card .price{
+  color:var(--gold);
+  font-weight:600;
+}
+
+.menu-card small{
+  color:var(--muted);
+}
+
+/* ===== FILTER KATEGORI ===== */
+.menu-filter{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:22px;
+  justify-content:center;
+}
+
+.menu-filter .filter-btn{
+  padding:8px 18px;
+  border-radius:30px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--text);
+  cursor:pointer;
+  font-size:.85rem;
+}
+
+.menu-filter .filter-btn.active{
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  color:#2a1b12;
+  font-weight:600;
+}
+
+
 
 </style>
 </head>
@@ -438,10 +642,10 @@ footer{
 <!-- MODAL -->
 <div id="welcomeModal">
   <h1 class="gold" style="font-family:'Playfair Display',serif;font-size:2.3rem">
-    Selamat Datang di Arch Coffee
+    Kami senang menyambut Anda
   </h1>
   <p style="max-width:420px;color:var(--muted)">
-    Rasakan pengalaman kopi premium dengan suasana elegan dan menenangkan.
+    Mari temukan momen santai favorit Anda bersama kopi terbaik kami.
   </p>
   <button id="enterBtn">Mulai</button>
 </div>
@@ -451,22 +655,27 @@ footer{
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <div class="brand">
-    <span class="gold">ARCH COFFEE -</span>
-    <span class="brand-white">MANAJEMEN</span>
+
+    <!-- BRAND LOGO + TEXT -->
+    <div class="brand brand-logo">
+      <img src="{{ asset('img/logo_arch_web.png') }}"
+           alt="Arch Coffee Logo"
+           class="brand-img">
+      <span class="brand-text gold">ARCH COFFEE</span>
     </div>
 
-    <div class="nav-actions">
-      <div class="dropdown" id="infoDropdown">
-        <button class="dropdown-btn">Informasi ▾</button>
-        <div class="dropdown-menu">
-          <a href="https://www.instagram.com/_archcoffee/" target="_blank">Instagram</a>
-          <a href="https://www.instagram.com/ewin.lntp/" target="_blank">Programmer</a>
-          <a href="https://www.youtube.com/watch?v=b13WkfMTXeU&t=105s" target="_blank">Tutorial</a>
-        </div>
-      </div>
-      <a href="{{ route('login') }}" class="nav-login">Login</a>
+    <!-- HAMBURGER -->
+    <button class="nav-toggle" id="navToggle">☰</button>
+
+    <!-- MENU HAMBURGER -->
+    <div class="nav-actions" id="navMenu">
+        <a href="#" id="openMenuCafe">Menu Cafe</a>
+        <a href="https://www.instagram.com/_archcoffee/" target="_blank">Instagram</a>
+        <a href="https://www.instagram.com/ewin.lntp/" target="_blank">Programmer</a>
+        <a href="https://www.youtube.com/watch?v=b13WkfMTXeU&t=105s" target="_blank">Tutorial</a>
+        <a href="{{ route('login') }}" class="nav-login">Login</a>
     </div>
+
   </div>
 </nav>
 
@@ -574,49 +783,151 @@ footer{
 
 <footer>© {{ date('Y') }} Arch Coffee - Mr. Suwanto Goma. All rights reserved.</footer>
 
+<!-- ===== MODAL MENU CAFE ===== -->
+<div class="menu-modal" id="menuCafeModal">
+  <div class="menu-modal-backdrop"></div>
+
+  <div class="menu-modal-content">
+    <button class="menu-modal-close" id="closeMenuCafe">&times;</button>
+
+    <h2 class="gold">Menu Cafe</h2>
+    <!-- FILTER KATEGORI -->
+    <div class="menu-filter">
+    <button class="filter-btn active" data-category="all">Semua</button>
+
+    @foreach($categories as $cat)
+        <button class="filter-btn" data-category="{{ $cat->id }}">
+        {{ $cat->name }}
+        </button>
+    @endforeach
+    </div>
+
+
+    <div class="menu-grid">
+      @foreach($menuProducts as $item)
+      <div class="menu-card" data-category="{{ $item->category_id }}">
+        @if($item->image)
+          <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
+        @endif
+
+        <h4>{{ $item->name }}</h4>
+        <p class="price">Rp {{ number_format($item->price,0,',','.') }}</p>
+
+        @if($item->description)
+          <small>{{ $item->description }}</small>
+        @endif
+      </div>
+      @endforeach
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 <script>
-AOS.init({ duration:1100, once:true, offset:90 });
+    AOS.init({ duration:1100, once:true, offset:90 });
 
-const audio = document.getElementById('bgAudio');
-const modal = document.getElementById('welcomeModal');
+    const audio = document.getElementById('bgAudio');
+    const modal = document.getElementById('welcomeModal');
 
-document.getElementById('enterBtn').addEventListener('click', () => {
-  modal.classList.add('fade-out');
-  setTimeout(()=> modal.style.display='none', 800);
-  audio.play().catch(()=>{});
-});
+    document.getElementById('enterBtn').addEventListener('click', () => {
+    modal.classList.add('fade-out');
+    setTimeout(()=> modal.style.display='none', 800);
+    audio.play().catch(()=>{});
+    });
 
-// Dropdown logic
-const dropdown = document.getElementById('infoDropdown');
-const dropdownBtn = dropdown.querySelector('.dropdown-btn');
+    // Dropdown logic
+    const dropdown = document.getElementById('infoDropdown');
+    const dropdownBtn = dropdown.querySelector('.dropdown-btn');
 
-dropdownBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  dropdown.classList.toggle('active');
-});
+    dropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('active');
+    });
 
-document.addEventListener('click', (e) => {
-  if (!dropdown.contains(e.target)) {
-    dropdown.classList.remove('active');
-  }
-});
+    document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+    });
 
-dropdown.querySelectorAll('.dropdown-menu a').forEach(link => {
-  link.addEventListener('click', () => dropdown.classList.remove('active'));
-});
+    dropdown.querySelectorAll('.dropdown-menu a').forEach(link => {
+    link.addEventListener('click', () => dropdown.classList.remove('active'));
+    });
 </script>
 
 <script>
-const slides = document.querySelectorAll('.slide');
-let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
 
-setInterval(() => {
-  slides[currentSlide].classList.remove('active');
-  currentSlide = (currentSlide + 1) % slides.length;
-  slides[currentSlide].classList.add('active');
-}, 5000);
+    setInterval(() => {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+    }, 5000);
 </script>
+
+<script>
+    const navToggle = document.getElementById('navToggle');
+    const navMenu   = document.getElementById('navMenu');
+
+    navToggle.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    navMenu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e)=>{
+    if(!navMenu.contains(e.target) && !navToggle.contains(e.target)){
+        navMenu.classList.remove('active');
+    }
+    });
+</script>
+
+<script>
+    const openMenuCafe  = document.getElementById('openMenuCafe');
+    const menuCafeModal = document.getElementById('menuCafeModal');
+    const closeMenuCafe = document.getElementById('closeMenuCafe');
+
+    openMenuCafe.addEventListener('click', (e)=>{
+    e.preventDefault();
+    menuCafeModal.classList.add('active');
+    navMenu.classList.remove('active'); // tutup hamburger
+    });
+
+    closeMenuCafe.addEventListener('click', ()=>{
+    menuCafeModal.classList.remove('active');
+    });
+
+    menuCafeModal.querySelector('.menu-modal-backdrop')
+    .addEventListener('click', ()=>{
+        menuCafeModal.classList.remove('active');
+    });
+</script>
+
+<script>
+    const filterButtons = document.querySelectorAll('.menu-filter .filter-btn');
+    const menuCards = document.querySelectorAll('.menu-card');
+
+    filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+
+        // aktifkan tombol
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const category = btn.dataset.category;
+
+        menuCards.forEach(card => {
+        if(category === 'all' || card.dataset.category === category){
+            card.style.display = 'block';
+        }else{
+            card.style.display = 'none';
+        }
+        });
+
+    });
+    });
+</script>
+
 
 
 </body>
