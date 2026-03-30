@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
 
     <style>
+        /* === PRINT STYLE === */
         .struk {
             width: 58mm;
             font-family: monospace;
@@ -50,46 +51,59 @@
             </div>
 
             <div class="section-body">
+                <div class="row">
+                    <div class="col-12">
+                        @include('layouts.alert')
+                    </div>
+                </div>
 
-                {{-- FILTER --}}
-                <form method="GET">
-                    <input type="date" name="start_date" value="{{ $start_date }}">
-                    <input type="date" name="end_date" value="{{ $end_date }}">
-                    <button class="btn btn-primary">Filter</button>
-                </form>
+                <!-- Filter -->
+                <div class="card">
+                    <div class="card-body">
+                        <form method="GET" action="{{ route('order_reports.index') }}">
+                            <input type="date" name="start_date" value="{{ $start_date }}">
+                            <input type="date" name="end_date" value="{{ $end_date }}">
+                            <button class="btn btn-primary">Filter</button>
+                        </form>
+                    </div>
+                </div>
 
-                {{-- TABLE --}}
-                <table class="table table-bordered mt-3">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Customer</th>
-                            <th>Total</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                <!-- TABLE -->
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
 
-                    <tbody>
-                        @foreach ($orders as $order)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $order->customer_name }}</td>
-                                <td>{{ number_format($order->payment_amount) }}</td>
-                                <td>
-                                    <button class="btn btn-info btn-sm view-details" data-id="{{ $order->id }}">
-                                        Detail
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                            <tbody>
+                                @foreach ($orders as $order)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $order->customer_name }}</td>
+                                        <td>{{ number_format($order->payment_amount, 2) }}</td>
+                                        <td>
+                                            <button class="btn btn-info view-details" data-id="{{ $order->id }}">
+                                                Detail
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
 
             </div>
         </section>
     </div>
 @endsection
-
 
 {{-- MODAL --}}
 <div class="modal fade" id="orderDetailModal">
@@ -101,7 +115,7 @@
             </div>
 
             <div class="modal-body">
-                <p>ID: <span id="order-id"></span></p>
+                <p>Order ID: <span id="order-id"></span></p>
                 <p>Customer: <span id="customer-name"></span></p>
 
                 <table class="table">
@@ -112,6 +126,7 @@
             </div>
 
             <div class="modal-footer">
+                <!-- === PRINT BUTTON === -->
                 <button class="btn btn-success" onclick="printStruk()">🖨️ Print</button>
             </div>
 
@@ -120,14 +135,15 @@
 </div>
 
 
-{{-- PRINT AREA --}}
+<!-- === PRINT AREA === -->
 <div id="print-area" style="display:none;">
     <div class="struk">
 
         <center>
             <h3>ARCH</h3>
             <p>Kompleks Batu Pinagut</p>
-            <p>Boroko Timur</p>
+            <p>Boroko Timur, Kaidipang</p>
+            <p>Kab. Bolaang Mongondow Utara</p>
             <p>0821 9511 0639</p>
         </center>
 
@@ -143,7 +159,7 @@
 
         <hr>
 
-        <p>Total : <span id="print-total"></span></p>
+        <p><b>Total : <span id="print-total"></span></b></p>
 
         <hr>
 
@@ -156,64 +172,79 @@
 
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-        $('.view-details').click(function() {
+        $(document).ready(function() {
 
-            let orderId = $(this).data('id');
+            $('.view-details').click(function() {
 
-            $('#order-items').html('');
+                let orderId = $(this).data('id');
 
-            $.get(`/orders/${orderId}`, function(response) {
+                $('#order-items').html('');
+                $('#customer-name').text('');
+                $('#total-bayar').text('');
 
-                let total = 0;
+                $.ajax({
+                    url: `/orders/${orderId}`,
+                    type: 'GET',
 
-                response.items.forEach(item => {
+                    success: function(response) {
 
-                    let t = parseFloat(item.total.replace(/,/g, ''));
-                    total += t;
+                        let total = 0;
 
-                    $('#order-items').append(`
-                        <tr>
-                        <td>${item.product_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.total}</td>
-                    </tr>
-                    `);
+                        // TABLE NORMAL
+                        response.items.forEach(item => {
+
+                            let t = parseFloat(item.total.replace(/,/g, ''));
+                            total += t;
+
+                            $('#order-items').append(`
+<tr>
+<td>${item.product_name}</td>
+<td>${item.quantity}</td>
+<td>${item.price}</td>
+<td>${item.total}</td>
+</tr>
+`);
+                        });
+
+                        // SET MODAL
+                        $('#order-id').text(orderId);
+                        $('#customer-name').text(response.order.customer_name);
+                        $('#total-bayar').text(total.toLocaleString('id-ID'));
+
+
+                        // === PRINT DATA ===
+                        $('#print-order-id').text(orderId);
+                        $('#print-customer').text(response.order.customer_name);
+
+                        let itemsPrint = '';
+
+                        response.items.forEach(item => {
+                            itemsPrint += `
+<p>${item.product_name}</p>
+<p>${item.quantity} x ${item.price} = ${item.total}</p>
+`;
+                        });
+
+                        $('#print-items').html(itemsPrint);
+                        $('#print-total').text(total.toLocaleString('id-ID'));
+
+                        let now = new Date();
+                        $('#print-date').text(now.toLocaleString('id-ID'));
+
+                        $('#orderDetailModal').modal('show');
+
+                    }
+
                 });
-
-                $('#order-id').text(orderId);
-                $('#customer-name').text(response.order.customer_name);
-                $('#total-bayar').text(total.toLocaleString('id-ID'));
-
-
-                // ====== PRINT DATA ======
-                $('#print-order-id').text(orderId);
-                $('#print-customer').text(response.order.customer_name);
-
-                let itemsPrint = '';
-
-                response.items.forEach(item => {
-                    itemsPrint += `
-                    <p>${item.product_name}</p>
-                    <p>${item.quantity} x ${item.price} = ${item.total}</p>
-                    `;
-                });
-
-                $('#print-items').html(itemsPrint);
-                $('#print-total').text(total.toLocaleString('id-ID'));
-
-                let now = new Date();
-                $('#print-date').text(now.toLocaleString('id-ID'));
-
-                $('#orderDetailModal').modal('show');
 
             });
 
         });
     </script>
 
+
+    <!-- === PRINT FUNCTION === -->
     <script>
         function printStruk() {
             window.print();
