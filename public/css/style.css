@@ -3756,13 +3756,26 @@ body.layout-3 .main-wrapper {
     opacity: 0;
   }
 }
+.struk {
+    width: 58mm;
+    font-family: monospace;
+    font-size: 12px;
+    page-break-inside: avoid;
+}
+
+.struk hr {
+    border-top: 1px dashed black;
+    margin: 5px 0;
+}
+
 @media print {
+
     body * {
-        visibility: hidden;
+        visibility: hidden !important;
     }
 
     #print-area, #print-area * {
-        visibility: visible;
+        visibility: visible !important;
     }
 
     #print-area {
@@ -3770,5 +3783,12 @@ body.layout-3 .main-wrapper {
         left: 0;
         top: 0;
         width: 58mm;
+        background: white;
+        padding: 5px;
     }
+
+}
+@page {
+    size: 58mm auto;
+    margin: 0;
 }
