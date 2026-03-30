@@ -3768,23 +3768,26 @@ body.layout-3 .main-wrapper {
     margin: 5px 0;
 }
 
+#print-area {
+    display: none;
+}
+
 @media print {
 
     body * {
         visibility: hidden !important;
     }
 
-    #print-area, #print-area * {
-        visibility: visible !important;
-    }
-
     #print-area {
+        display: block !important;
         position: absolute;
         left: 0;
         top: 0;
         width: 58mm;
-        background: white;
-        padding: 5px;
+    }
+
+    #print-area * {
+        visibility: visible !important;
     }
 
 }

@@ -390,7 +390,7 @@
     </div>
 </div>
 
-<div id="print-area" style="display:none;">
+<div id="print-area">
     <div class="struk">
 
         <center>
