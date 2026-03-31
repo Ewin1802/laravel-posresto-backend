@@ -112,7 +112,13 @@ class OrderController extends Controller
         $end_date = $request->input('end_date');
 
         if ($start_date && $end_date) {
-            $orders = Order::whereBetween('transaction_time', [$start_date, $end_date])->get();
+
+            $start = substr($start_date, 0, 10);
+            $end = substr($end_date, 0, 10);
+
+            $orders = Order::whereRaw("
+            DATE(SUBSTRING_INDEX(transaction_time, 'T', 1)) BETWEEN ? AND ?
+        ", [$start, $end])->get();
         } else {
             $orders = Order::all();
         }
