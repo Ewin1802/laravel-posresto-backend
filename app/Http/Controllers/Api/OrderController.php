@@ -129,9 +129,9 @@ class OrderController extends Controller
             $start = substr($start_date, 0, 10);
             $end = substr($end_date, 0, 10);
 
-            $orders = Order::with('orderItems.product')->whereRaw("
-    DATE(SUBSTRING_INDEX(transaction_time, 'T', 1)) BETWEEN ? AND ?
-", [$start, $end])->get();
+            $orders = Order::with('orderItems')->whereRaw("
+                DATE(SUBSTRING_INDEX(transaction_time, 'T', 1)) BETWEEN ? AND ?
+            ", [$start, $end])->get();
         } else {
             $orders = Order::all();
         }
