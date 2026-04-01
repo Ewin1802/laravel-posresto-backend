@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
+use App\Models\Product; // 🔥 tambahkan di atas
 
 class OrderController extends Controller
 {
@@ -68,10 +69,22 @@ class OrderController extends Controller
                     'customer_name' => $request->customer_name ?? null,
                 ]);
 
+                // foreach ($request->order_items as $item) {
+                //     OrderItem::create([
+                //         'order_id' => $order->id,
+                //         'product_id' => $item['id_product'],
+                //         'quantity' => $item['quantity'],
+                //         'price' => $item['price']
+                //     ]);
+                // }
                 foreach ($request->order_items as $item) {
+
+                    $product = Product::find($item['id_product']);
+
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item['id_product'],
+                        'product_name' => $product->name ?? 'Unknown', // 🔥 INI KUNCI
                         'quantity' => $item['quantity'],
                         'price' => $item['price']
                     ]);
