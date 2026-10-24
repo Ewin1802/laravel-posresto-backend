@@ -2,90 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Discount;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class DiscountController extends Controller
 {
     public function index(Request $request)
     {
+        $search = trim((string) $request->input('name'));
 
-        $discounts = DB::table('discounts')
-            ->when($request->input('name'), function ($query, $name) {
-                $query->where('discounts.name', 'like', '%' . $name . '%'); // Filter berdasarkan nama produk
-            })
-            ->paginate(10);
+        $discounts = Discount::query()
+            ->when($search !== '', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+            ->orderBy('value')
+            ->paginate(12)
+            ->withQueryString();
 
-        return view('pages.discounts.index', compact('discounts'));
+        return view('pages.discounts.index', compact('discounts', 'search'));
     }
 
-    // create
     public function create()
     {
         return view('pages.discounts.create');
     }
 
-    // store
     public function store(Request $request)
     {
-        // validate the request...
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'value' => 'required',
-        ]);
+        $data = $request->validate($this->rules(), $this->messages());
 
-        // store the request...
-        $discount = new Discount;
-        $discount->name = $request->name;
-        $discount->description = $request->description;
-        $discount->value = $request->value;
+        // Tipe tetap "percentage" (default tabel) karena aplikasi kasir membaca nilai sebagai persen.
+        $discount = Discount::create($data);
 
-        $discount->save();
-
-
-        return redirect()->route('discounts.index')->with('success', 'Discount created successfully');
+        return redirect()->route('discounts.index')->with('success', "Diskon {$discount->name} berhasil ditambahkan.");
     }
 
-
-    // edit
     public function edit($id)
     {
         $discount = Discount::findOrFail($id);
+
         return view('pages.discounts.edit', compact('discount'));
     }
 
-    // update
     public function update(Request $request, $id)
     {
-        // validate the request...
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'value' => 'required',
-        ]);
+        $discount = Discount::findOrFail($id);
+        $discount->update($request->validate($this->rules(), $this->messages()));
 
-        // update the request...
-        $discount = Discount::find($id);
-        $discount->name = $request->name;
-        $discount->description = $request->description;
-        $discount->value = $request->value;
-
-        $discount->save();
-
-
-
-        return redirect()->route('discounts.index')->with('success', 'Discount updated successfully');
+        return redirect()->route('discounts.index')->with('success', "Diskon {$discount->name} berhasil diperbarui.");
     }
 
-    // destroy
     public function destroy($id)
     {
-        // delete the request...
         $discount = Discount::find($id);
+
+        if (!$discount) {
+            return redirect()->route('discounts.index')->with('error', 'Diskon tidak ditemukan.');
+        }
+
         $discount->delete();
 
-        return redirect()->route('discounts.index')->with('success', 'Discount deleted successfully');
+        return redirect()->route('discounts.index')->with('success', "Diskon {$discount->name} telah dihapus.");
+    }
+
+    private function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'value' => ['required', 'numeric', 'min:0', 'max:100'],
+        ];
+    }
+
+    private function messages(): array
+    {
+        return [
+            'name.required' => 'Nama diskon wajib diisi.',
+            'description.required' => 'Keterangan wajib diisi.',
+            'value.required' => 'Besar diskon wajib diisi.',
+            'value.numeric' => 'Besar diskon harus berupa angka.',
+            'value.min' => 'Besar diskon tidak boleh negatif.',
+            'value.max' => 'Besar diskon maksimal 100%.',
+        ];
     }
 }

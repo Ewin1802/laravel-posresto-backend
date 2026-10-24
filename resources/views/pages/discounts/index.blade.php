@@ -1,146 +1,92 @@
 @extends('layouts.app')
 
-@section('title', 'Discount')
-{{-- Favicon - Logo web disamping title --}}
-<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
-@endpush
+@section('title', 'Diskon')
+@section('crumb', 'Data umum')
 
 @section('main')
-    <div class="main-content">
-        <section class="section">
-            <div class="section-header">
-                <h1>Diskon</h1>
-                <div class="section-header-button">
-                    <a href="{{ route('discounts.create') }}" class="btn btn-primary">Tambah Diskon Baru</a>
-                </div>
-                <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Diskon</a></div>
-                    <div class="breadcrumb-item">Semua Diskon</div>
-                </div>
-            </div>
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        @include('layouts.alert')
-                    </div>
-                </div>
-                {{-- <h2 class="section-title">Diskon</h2>
-                <p class="section-lead">
-                    Manajemen diskon disini, Tambah baru, Ubah data, deng Hapus.
-                </p> --}}
-
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Semua Diskon</h4>
-                            </div>
-                            <div class="card-body">
-                                {{-- <div class="float-left">
-                                    <select class="form-control selectric">
-                                        <option>Action For Selected</option>
-                                        <option>Move to Draft</option>
-                                        <option>Move to Pending</option>
-                                        <option>Delete Pemanently</option>
-                                    </select>
-                                </div> --}}
-                                <div class="float-right">
-                                    <form method="GET" action="{{ route('discounts.index') }}">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search" name="name">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="clearfix mb-3"></div>
-
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                            <th>Value</th>
-                                            <th>Created At</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        @foreach ($discounts as $user)
-                                            <tr>
-
-                                                <td>{{ $user->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $user->description }}
-                                                </td>
-                                                <td>
-                                                    {{ $user->value }}
-                                                </td>
-                                                <td>{{ $user->created_at }}</td>
-                                                <td>
-                                                    {{-- <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('users.edit', $user->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('users.destroy', $user->id) }}"
-                                                            method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div> --}}
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('discounts.edit', $user->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('discounts.destroy', $user->id) }} " method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon" onclick="return confirm('Butul mo hapus ini data?')">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $discounts->withQueryString()->links() }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div class="page-head">
+        <div>
+            <h1 class="page-head__title">Diskon</h1>
+            <p class="page-head__lead">Potongan harga dalam persen yang bisa dipilih kasir saat transaksi.</p>
+        </div>
+        <div class="page-head__actions">
+            <a href="{{ route('discounts.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah diskon</a>
+        </div>
     </div>
+
+    @include('layouts.alert')
+
+    <section class="panel">
+        <div class="panel__head">
+            <form method="GET" action="{{ route('discounts.index') }}" class="toolbar">
+                <div class="search">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" name="name" value="{{ $search }}" placeholder="Cari diskon" aria-label="Cari diskon">
+                </div>
+                @if ($search)
+                    <a href="{{ route('discounts.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+                @endif
+            </form>
+            <span class="count-chip">{{ $discounts->total() }} diskon</span>
+        </div>
+
+        @if ($discounts->isEmpty())
+            <div class="empty">
+                <div class="empty__icon"><i class="fas fa-percent"></i></div>
+                <h3>{{ $search ? 'Diskon tidak ditemukan' : 'Belum ada diskon' }}</h3>
+                <p>{{ $search ? 'Coba kata kunci lain.' : 'Buat diskon seperti Member 10% atau Promo pembukaan.' }}</p>
+                @unless ($search)
+                    <a href="{{ route('discounts.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah diskon</a>
+                @endunless
+            </div>
+        @else
+            <div class="table-scroll">
+                <table class="table-x">
+                    <thead>
+                        <tr>
+                            <th style="width:110px">Potongan</th>
+                            <th>Nama</th>
+                            <th>Status</th>
+                            <th>Dibuat</th>
+                            <th class="t-actions"><span class="sr-only">Aksi</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($discounts as $discount)
+                            <tr>
+                                <td>
+                                    <span class="stat__value" style="margin:0; font-size:24px">{{ str_replace('.', ',', (string) (float) $discount->value) }}<small style="margin-left:2px">%</small></span>
+                                </td>
+                                <td>
+                                    <div class="cell-main">{{ $discount->name }}</div>
+                                    <div class="cell-sub">{{ $discount->description }}</div>
+                                </td>
+                                <td>
+                                    @if ($discount->status === 'inactive')
+                                        <span class="tag">Nonaktif</span>
+                                    @elseif ($discount->expired_date && \Carbon\Carbon::parse($discount->expired_date)->isPast())
+                                        <span class="tag tag--amber">Kedaluwarsa</span>
+                                    @else
+                                        <span class="tag tag--sage">Aktif</span>
+                                    @endif
+                                </td>
+                                <td>{{ $discount->created_at?->translatedFormat('d M Y') }}</td>
+                                <td class="t-actions">
+                                    <a href="{{ route('discounts.edit', $discount->id) }}" class="btn btn-light btn-sm"><i class="fas fa-pen"></i> Ubah</a>
+                                    <form action="{{ route('discounts.destroy', $discount->id) }}" method="POST" class="d-inline"
+                                        data-confirm="Diskon {{ $discount->name }} tidak akan bisa dipilih lagi di aplikasi kasir."
+                                        data-confirm-title="Hapus diskon?">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-ghost-danger btn-sm" aria-label="Hapus {{ $discount->name }}"><i class="fas fa-trash-can"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            {{ $discounts->links() }}
+        @endif
+    </section>
 @endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-    <script src="{{ asset('library/selectric/public/jquery.selectric.min.js') }}"></script>
-
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/features-posts.js') }}"></script>
-@endpush

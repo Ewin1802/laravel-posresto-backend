@@ -1,35 +1,156 @@
-<div class="navbar-bg"></div>
-<nav class="navbar navbar-expand-lg main-navbar">
-    <form class="form-inline mr-auto">
-        <ul class="navbar-nav mr-3">
-            <li><a href="#"
-                    data-toggle="sidebar"
-                    class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
-            <li><a href="#"
-                    data-toggle="search"
-                    class="nav-link nav-link-lg d-sm-none"><i class="fas fa-search"></i></a></li>
-        </ul>
-    </form>
+@php
+    $user = auth()->user();
+    $isAdminNav = $user->role === 'admin';
+    $initials = collect(explode(' ', trim($user->name)))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
 
-    <ul class="navbar-nav navbar-right">
-        <li class="dropdown">
-            <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                <img alt="image" src="{{ asset('img/logo_arch_web.png') }}" class="mr-2 logo-arch">
-                <div class="user-info">
-                    <div class="arch-info">ARCH Manajemen</div>
-                    <div class="user-name">User : {{ auth()->user()->name }}</div>
-                </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right">
-                <a href="#" class="dropdown-item has-icon text-danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
+    // Daftar untuk pencarian cepat (Ctrl + K): halaman dan aksi.
+    $cmdItems = [['group' => 'Halaman', 'label' => 'Dashboard', 'icon' => 'fa-gauge-high', 'url' => route('home'), 'hint' => 'Ringkasan hari ini']];
+    if ($isAdminNav) {
+        $pages = [
+            ['Produk', 'fa-mug-hot', 'products.index', 'Data umum'],
+            ['Kategori', 'fa-layer-group', 'categories.index', 'Data umum'],
+            ['Diskon', 'fa-percent', 'discounts.index', 'Data umum'],
+            ['Pengguna', 'fa-user-group', 'users.index', 'Data umum'],
+            ['Daftar bahan', 'fa-seedling', 'bahans.index', 'Persediaan'],
+            ['Persediaan masuk', 'fa-arrow-right-to-bracket', 'inventories.index', 'Persediaan'],
+            ['Persediaan keluar', 'fa-arrow-right-from-bracket', 'inventory_out.index', 'Persediaan'],
+            ['Laporan penjualan', 'fa-receipt', 'order_reports.index', 'Laporan'],
+            ['Produk terlaris', 'fa-ranking-star', 'top.products', 'Laporan'],
+            ['Laporan persediaan', 'fa-boxes-stacked', 'inventory.reports', 'Laporan'],
+            ['Analisa keuangan', 'fa-chart-line', 'financial.report', 'Laporan'],
+        ];
+        foreach ($pages as [$l, $i, $r, $h]) {
+            $cmdItems[] = ['group' => 'Halaman', 'label' => $l, 'icon' => $i, 'url' => route($r), 'hint' => $h];
+        }
+        $quick = [
+            ['Tambah produk', 'fa-plus', 'products.create'],
+            ['Catat pembelian bahan', 'fa-cart-plus', 'inventories.create'],
+            ['Catat bahan keluar', 'fa-dolly', 'inventory_out.create'],
+            ['Tambah kategori', 'fa-folder-plus', 'categories.create'],
+            ['Tambah diskon', 'fa-tag', 'discounts.create'],
+            ['Tambah pengguna', 'fa-user-plus', 'users.create'],
+        ];
+        foreach ($quick as [$l, $i, $r]) {
+            $cmdItems[] = ['group' => 'Aksi cepat', 'label' => $l, 'icon' => $i, 'url' => route($r), 'hint' => ''];
+        }
+        $today = now()->toDateString();
+        $cmdItems[] = ['group' => 'Aksi cepat', 'label' => 'Penjualan hari ini', 'icon' => 'fa-calendar-day', 'url' => route('order_reports.index', ['start_date' => $today, 'end_date' => $today]), 'hint' => 'Laporan'];
+    }
+    $cmdItems[] = ['group' => 'Lainnya', 'label' => 'Lihat halaman publik', 'icon' => 'fa-store', 'url' => route('landing'), 'hint' => 'Tab baru', 'external' => true];
+@endphp
+
+<header class="topbar">
+    <div class="topbar__bar">
+        <button type="button" class="topbar__toggle" data-sidebar-toggle aria-label="Buka menu" aria-controls="sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <button type="button" class="topbar__collapse" data-sidebar-collapse aria-controls="sidebar"
+            aria-expanded="true" aria-label="Ciutkan sidebar" title="Ciutkan / lebarkan sidebar (Ctrl + B)">
+            <span class="hamb" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+
+        <nav class="topbar__crumbs" aria-label="Lokasi halaman">
+            <a href="{{ route('home') }}" class="crumb-home" aria-label="Dashboard"><i class="fas fa-house"></i></a>
+            @hasSection('crumb')
+                <i class="fas fa-chevron-right sep" aria-hidden="true"></i><span class="crumb">@yield('crumb')</span>
+            @endif
+            <i class="fas fa-chevron-right sep" aria-hidden="true"></i><span class="crumb is-current" aria-current="page">@yield('title')</span>
+        </nav>
+
+        <div class="topbar__right">
+            <div class="clock" aria-label="Waktu sekarang">
+                <span class="clock__dot" aria-hidden="true"></span>
+                <span class="clock__time" data-clock-time>{{ now()->format('H:i') }}</span>
+                <span class="clock__date" data-clock-date>{{ now()->translatedFormat('D, d M') }} · WITA</span>
             </div>
-        </li>
-    </ul>
-</nav>
 
+            @if ($isAdminNav)
+                <div class="dropdown">
+                    <button type="button" class="icon-btn icon-btn--red" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Buat baru" title="Buat baru">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right menu-x">
+                        <div class="menu-x__title">Buat baru</div>
+                        <a class="dropdown-item" href="{{ route('products.create') }}"><span class="menu-x__ic"><i class="fas fa-mug-hot"></i></span><span><b>Produk</b><small>Menu baru di aplikasi kasir</small></span></a>
+                        <a class="dropdown-item" href="{{ route('inventories.create') }}"><span class="menu-x__ic"><i class="fas fa-cart-plus"></i></span><span><b>Pembelian bahan</b><small>Catat persediaan masuk</small></span></a>
+                        <a class="dropdown-item" href="{{ route('inventory_out.create') }}"><span class="menu-x__ic"><i class="fas fa-dolly"></i></span><span><b>Bahan keluar</b><small>Pemakaian dapur & bar</small></span></a>
+                        <a class="dropdown-item" href="{{ route('users.create') }}"><span class="menu-x__ic"><i class="fas fa-user-plus"></i></span><span><b>Pengguna</b><small>Akun staf atau kasir</small></span></a>
+                    </div>
+                </div>
+            @endif
 
+            <a href="{{ route('landing') }}" class="icon-btn" target="_blank" rel="noopener" aria-label="Lihat halaman publik" title="Lihat halaman publik">
+                <i class="fas fa-store"></i>
+            </a>
+
+            <div class="dropdown">
+                <button type="button" class="user-chip" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Menu akun">
+                    <span class="user-chip__avatar">{{ $initials ?: 'A' }}</span>
+                    <span class="user-chip__text">
+                        <span class="user-chip__name d-block">{{ $user->name }}</span>
+                        <span class="user-chip__role d-block">{{ $user->role }}</span>
+                    </span>
+                    <i class="fas fa-chevron-down user-chip__caret" aria-hidden="true"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right menu-x menu-x--account">
+                    <div class="account-card">
+                        <span class="account-card__avatar">{{ $initials ?: 'A' }}</span>
+                        <div>
+                            <strong>{{ $user->name }}</strong>
+                            <span>{{ $user->email }}</span>
+                        </div>
+                    </div>
+                    <a class="dropdown-item" href="{{ route('home') }}"><span class="menu-x__ic"><i class="fas fa-gauge-high"></i></span><span><b>Dashboard</b></span></a>
+                    <a class="dropdown-item" href="{{ route('landing') }}" target="_blank" rel="noopener"><span class="menu-x__ic"><i class="fas fa-store"></i></span><span><b>Halaman publik</b></span></a>
+                    <button type="button" class="dropdown-item" data-cmdk-open><span class="menu-x__ic"><i class="fas fa-keyboard"></i></span><span><b>Pencarian cepat</b></span><kbd class="ml-auto"><span data-mod>Ctrl</span> K</kbd></button>
+                    <div class="dropdown-divider"></div>
+                    <button type="button" class="dropdown-item text-danger" onclick="document.getElementById('logout-form').submit()">
+                        <span class="menu-x__ic"><i class="fas fa-arrow-right-from-bracket"></i></span><span><b>Keluar</b></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+        @csrf
+    </form>
+</header>
+
+{{-- Pencarian cepat --}}
+<div class="cmdk" id="cmdk" role="dialog" aria-modal="true" aria-label="Pencarian cepat" hidden>
+    <div class="cmdk__backdrop" data-cmdk-close></div>
+    <div class="cmdk__panel">
+        <div class="cmdk__search">
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="text" id="cmdkInput" placeholder="Ketik nama halaman atau aksi…" autocomplete="off"
+                role="combobox" aria-expanded="true" aria-controls="cmdkList" aria-autocomplete="list">
+            <kbd>Esc</kbd>
+        </div>
+        <div class="cmdk__list" id="cmdkList" role="listbox">
+            @foreach (collect($cmdItems)->groupBy('group') as $group => $items)
+                <div class="cmdk__group" data-cmdk-group>
+                    <div class="cmdk__group-title">{{ $group }}</div>
+                    @foreach ($items as $item)
+                        <a href="{{ $item['url'] }}" class="cmdk__item" role="option" data-cmdk-item
+                            data-search="{{ \Illuminate\Support\Str::lower($item['label'] . ' ' . $item['hint'] . ' ' . $group) }}"
+                            @if (!empty($item['external'])) target="_blank" rel="noopener" @endif>
+                            <span class="cmdk__ic"><i class="fas {{ $item['icon'] }}"></i></span>
+                            <span class="cmdk__label">{{ $item['label'] }}</span>
+                            @if ($item['hint'])
+                                <span class="cmdk__hint">{{ $item['hint'] }}</span>
+                            @endif
+                            <i class="fas fa-arrow-turn-down cmdk__enter" aria-hidden="true"></i>
+                        </a>
+                    @endforeach
+                </div>
+            @endforeach
+            <div class="cmdk__empty" hidden>Tidak ada yang cocok. Coba kata lain, misalnya “laporan” atau “bahan”.</div>
+        </div>
+        <div class="cmdk__foot">
+            <span><kbd>↑</kbd><kbd>↓</kbd> pilih</span>
+            <span><kbd>Enter</kbd> buka</span>
+            <span><kbd>Esc</kbd> tutup</span>
+        </div>
+    </div>
+</div>

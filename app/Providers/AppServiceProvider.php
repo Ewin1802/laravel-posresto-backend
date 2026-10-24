@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrapFive();
+        // Tampilan paginasi bertema ARCH untuk seluruh halaman admin.
+        Paginator::defaultView('vendor.pagination.arch');
 
+        // Nama hari & bulan dalam Bahasa Indonesia (translatedFormat).
+        Carbon::setLocale(config('app.locale', 'id'));
     }
 }

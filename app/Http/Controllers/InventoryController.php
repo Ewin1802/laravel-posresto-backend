@@ -2,89 +2,110 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Inventory;
 use App\Models\Bahan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Inventory;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class InventoryController extends Controller
 {
-
-    public function index()
+    public function index(Request $request)
     {
-        $inventories = Inventory::latest()->paginate(10);
-        return view('pages.inventories.index', compact('inventories'));
+        $search = trim((string) $request->input('search'));
+        $stock = $request->input('stock');
+
+        $inventories = Inventory::query()
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($w) use ($search) {
+                    $w->where('nama_bahan', 'like', "%{$search}%")
+                        ->orWhere('supplier', 'like', "%{$search}%")
+                        ->orWhere('receiver', 'like', "%{$search}%");
+                });
+            })
+            ->when($stock === 'empty', fn ($q) => $q->where('quantity', '<=', 0))
+            ->when($stock === 'low', fn ($q) => $q->where('quantity', '>', 0)->whereRaw('quantity <= saldo_awal * 0.2'))
+            ->when($stock === 'available', fn ($q) => $q->where('quantity', '>', 0))
+            ->latest('tanggal_masuk')
+            ->latest('id')
+            ->paginate(12)
+            ->withQueryString();
+
+        $summary = Inventory::query()
+            ->selectRaw('COUNT(*) as batches, COALESCE(SUM(quantity * amount),0) as stock_value, SUM(CASE WHEN quantity <= 0 THEN 1 ELSE 0 END) as empty_count')
+            ->first();
+
+        return view('pages.inventories.index', compact('inventories', 'search', 'stock', 'summary'));
     }
 
-    public function create() {
-        $materials = Bahan::orderBy('nama_bahan', 'asc')->get(); // Ambil semua bahan
+    public function create()
+    {
+        $materials = Bahan::orderBy('nama_bahan')->get();
+
         return view('pages.inventories.create', compact('materials'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             'bahan_id' => 'required|exists:bahans,id',
-            'satuan' => 'required|string',
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'supplier' => 'nullable|string',
-            'receiver' => 'nullable|string',
+            'supplier' => 'nullable|string|max:255',
+            'receiver' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-        ]);
+        ], $this->messages());
 
-        // Ambil bahan berdasarkan bahan_id
         $bahan = Bahan::findOrFail($request->bahan_id);
 
-        // Persiapkan data untuk disimpan
-        $data = $request->all();
+        $data = $request->only(['bahan_id', 'amount', 'quantity', 'supplier', 'receiver', 'description']);
         $data['nama_bahan'] = $bahan->nama_bahan;
-        $data['saldo_awal'] = $request->quantity;
-        $data['tanggal_masuk'] = Carbon::now(); // Menyimpan tanggal & jam saat transaksi dibuat
+        $data['satuan'] = $bahan->satuan;           // selalu dari master bahan
+        $data['saldo_awal'] = $request->quantity;    // jumlah pembelian awal
+        $data['tanggal_masuk'] = Carbon::now();
 
-        // Simpan gambar jika ada
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('inventory_images', 'public');
         }
 
-        // Simpan data ke database
         Inventory::create($data);
 
-        return redirect()->route('inventories.index')->with('success', 'Transaksi berhasil ditambahkan!');
+        return redirect()->route('inventories.index')->with('success', "Persediaan {$bahan->nama_bahan} berhasil dicatat.");
     }
 
-
-    public function edit(Inventory $inventory) {
-        // Ambil semua bahan untuk dropdown
-        $materials = Bahan::all();
+    public function edit(Inventory $inventory)
+    {
+        $materials = Bahan::orderBy('nama_bahan')->get();
+        $inventory->loadSum('inventoryOut as total_keluar', 'quantity_out');
 
         return view('pages.inventories.edit', compact('inventory', 'materials'));
     }
 
-    // Update transaksi inventaris
-    public function update(Request $request, Inventory $inventory) {
+    public function update(Request $request, Inventory $inventory)
+    {
+        // Catatan: form lama tidak mengirim saldo_awal padahal wajib, sehingga
+        // perubahan selalu gagal validasi. Sekarang saldo_awal opsional.
         $request->validate([
             'bahan_id' => 'required|exists:bahans,id',
-            'amount' => 'required|numeric',
-            'saldo_awal' => 'required|integer',
-            'quantity' => 'required|integer',
-            'supplier' => 'nullable|string',
-            'receiver' => 'nullable|string',
+            'amount' => 'required|numeric|min:0',
+            'saldo_awal' => 'nullable|integer|min:0',
+            'quantity' => 'required|integer|min:0',
+            'supplier' => 'nullable|string|max:255',
+            'receiver' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-        ]);
+        ], $this->messages());
 
-        // Ambil bahan berdasarkan bahan_id
         $bahan = Bahan::findOrFail($request->bahan_id);
 
-        // Persiapkan data untuk diperbarui
-        $data = $request->all();
+        $data = $request->only(['bahan_id', 'amount', 'quantity', 'supplier', 'receiver', 'description']);
         $data['nama_bahan'] = $bahan->nama_bahan;
         $data['satuan'] = $bahan->satuan;
+        if ($request->filled('saldo_awal')) {
+            $data['saldo_awal'] = (int) $request->saldo_awal;
+        }
 
-        // Jika ada gambar baru, hapus gambar lama dan simpan yang baru
         if ($request->hasFile('image')) {
             if ($inventory->image) {
                 Storage::disk('public')->delete($inventory->image);
@@ -92,14 +113,23 @@ class InventoryController extends Controller
             $data['image'] = $request->file('image')->store('inventory_images', 'public');
         }
 
-        // Update data inventaris
         $inventory->update($data);
 
-        return redirect()->route('inventories.index')->with('success', 'Transaksi berhasil diperbarui!');
+        return redirect()->route('inventories.index')->with('success', "Persediaan {$bahan->nama_bahan} berhasil diperbarui.");
     }
 
-    public function destroy(string $id)
+    private function messages(): array
     {
-        //
+        return [
+            'bahan_id.required' => 'Pilih bahan terlebih dahulu.',
+            'bahan_id.exists' => 'Bahan tidak ditemukan.',
+            'amount.required' => 'Harga per satuan wajib diisi.',
+            'amount.numeric' => 'Harga harus berupa angka.',
+            'quantity.required' => 'Jumlah wajib diisi.',
+            'quantity.integer' => 'Jumlah harus angka bulat.',
+            'quantity.min' => 'Jumlah tidak valid.',
+            'image.image' => 'Bukti transaksi harus berupa gambar.',
+            'image.max' => 'Ukuran gambar maksimal 2 MB.',
+        ];
     }
 }

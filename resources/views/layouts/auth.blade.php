@@ -1,81 +1,57 @@
+@php $asv = fn ($p) => file_exists(public_path($p)) ? filemtime(public_path($p)) : '2'; @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
-        name="viewport">
-    <title>@yield('title') &mdash; ARCH Manajemen</title>
-    {{-- Favicon - Logo web disamping title --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#2B1D17">
+    <title>@yield('title') — ARCH Manajemen</title>
     <link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
 
-    <!-- General CSS Files -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
-        href="{{ asset('library/bootstrap/dist/css/bootstrap.min.css') }}">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,0..100&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ asset('library/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
         integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer" />
-
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     @stack('style')
-
-    <!-- Template CSS -->
-    <link rel="stylesheet"
-        href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet"
-        href="{{ asset('css/components.css') }}">
-    <!-- Start GA -->
-    <script async
-        src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-94034622-3');
-    </script>
-    <!-- END GA -->
+    <link rel="stylesheet" href="{{ asset('css/arch-premium.css') }}?v={{ $asv('css/arch-premium.css') }}">
 </head>
 
-<body>
-    <div id="app">
-        <section class="section">
-            <div class="container mt-5">
-                <div class="row">
-                    <div
-                        class="{{ Request::is('auth-register') ? 'col-12 col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-8 offset-lg-2 col-xl-8 offset-xl-2' : 'col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4' }}">
-                        <!-- Footer -->
-                        @include('components.auth-header')
+<body class="arch">
+    <div class="auth">
+        <section class="auth__art">
+            <a href="{{ route('landing') }}" class="auth__brand">
+                <img src="{{ asset('img/logo_arch_web.png') }}" alt="">
+                <strong>ARCH</strong>
+            </a>
 
-                        <!-- Content -->
-                        @yield('main')
+            <div style="position: relative; z-index: 1;">
+                <p class="auth__quote">Setiap cangkir tercatat, setiap rupiah terjaga.</p>
+                <p class="auth__quote-sub">Pusat kendali penjualan, persediaan, dan laporan keuangan ARCH — Boroko Timur, Kaidipang.</p>
+            </div>
 
-                        <!-- Footer -->
-                        @include('components.auth-footer')
-                    </div>
-                </div>
+            <div class="auth__mark" aria-hidden="true">
+                <img src="{{ asset('img/logo_arch_web.png') }}" alt="">
+            </div>
+
+            <div class="auth__foot">&copy; {{ date('Y') }} ARCH Manajemen · Dirancang oleh <a href="https://www.instagram.com/ewin.lntp/" target="_blank" rel="noopener">Ewin Lantapa</a></div>
+        </section>
+
+        <section class="auth__form">
+            <div class="auth__card">
+                @yield('main')
             </div>
         </section>
     </div>
 
-    <!-- General JS Scripts -->
     <script src="{{ asset('library/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ asset('library/popper.js/dist/umd/popper.js') }}"></script>
-    <script src="{{ asset('library/tooltip.js/dist/umd/tooltip.js') }}"></script>
-    <script src="{{ asset('library/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('library/jquery.nicescroll/dist/jquery.nicescroll.min.js') }}"></script>
-    <script src="{{ asset('library/moment/min/moment.min.js') }}"></script>
-    <script src="{{ asset('js/stisla.js') }}"></script>
-
+    <script>window.jQuery || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"><\/script>')</script>
+    <script src="{{ asset('js/arch-premium.js') }}?v={{ $asv('js/arch-premium.js') }}"></script>
     @stack('scripts')
-
-    <!-- Template JS File -->
-    <script src="{{ asset('js/scripts.js') }}"></script>
-    <script src="{{ asset('js/custom.js') }}"></script>
 </body>
 
 </html>

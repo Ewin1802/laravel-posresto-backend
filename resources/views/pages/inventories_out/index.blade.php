@@ -1,65 +1,85 @@
 @extends('layouts.app')
 
-@section('title', 'Inventaris Keluar')
-{{-- Favicon --}}
-<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
+@section('title', 'Persediaan keluar')
+@section('crumb', 'Persediaan')
 
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
-
-@endpush
+@php $rp = fn ($v) => number_format((float) $v, 0, ',', '.'); @endphp
 
 @section('main')
-<div class="main-content">
-    <section class="section">
-        <div class="section-header">
-            <h1>Persediaan Keluar</h1>
+    <div class="page-head">
+        <div>
+            <h1 class="page-head__title">Persediaan keluar</h1>
+            <p class="page-head__lead">
+                Bulan ini {{ $monthValue->c ?? 0 }} pengeluaran bahan senilai Rp {{ $rp($monthValue->v ?? 0) }}.
+            </p>
+        </div>
+        <div class="page-head__actions">
+            <a href="{{ route('inventory_out.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Catat bahan keluar</a>
+        </div>
+    </div>
 
-            <div class="section-header-button">
-                <a href="{{ route('inventory_out.create') }}" class="btn btn-primary">Tambah Transaksi Keluar</a>
-            </div>
-            <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                <div class="breadcrumb-item"><a href="#">Persediaan</a></div>
-                <div class="breadcrumb-item">Persediaan Keluar</div>
-            </div>
+    @include('layouts.alert')
+
+    <section class="panel">
+        <div class="panel__head">
+            <form method="GET" action="{{ route('inventory_out.index') }}" class="toolbar">
+                <div class="search">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" name="search" value="{{ $search }}" placeholder="Cari bahan atau penerima" aria-label="Cari persediaan keluar">
+                </div>
+                @if ($search)
+                    <a href="{{ route('inventory_out.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+                @endif
+            </form>
+            <span class="count-chip">{{ $inventory_outs->total() }} transaksi</span>
         </div>
 
-        <div class="section-body">
-            @include('layouts.alert')
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nama Bahan</th>
-                        <th>Jumlah Keluar</th>
-                        <th>Satuan</th>
-                        <th>Harga Satuan</th>
-                        <th>Total Harga</th>
-                        <th>Penerima</th>
-                        <th>Tanggal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($inventory_outs as $out)
+        @if ($inventory_outs->isEmpty())
+            <div class="empty">
+                <div class="empty__icon"><i class="fas fa-arrow-right-from-bracket"></i></div>
+                <h3>{{ $search ? 'Tidak ada yang cocok' : 'Belum ada bahan keluar' }}</h3>
+                <p>{{ $search ? 'Coba kata kunci lain.' : 'Catat setiap bahan yang dipakai dapur atau bar agar stok tetap akurat.' }}</p>
+                @unless ($search)
+                    <a href="{{ route('inventory_out.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Catat bahan keluar</a>
+                @endunless
+            </div>
+        @else
+            <div class="table-scroll">
+                <table class="table-x">
+                    <thead>
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $out->inventory->nama_bahan }}</td>
-                            <td>{{ $out->quantity_out }}</td>
-                            <td>{{ $out->inventory->satuan }}</td>
-                            <td>Rp{{ number_format($out->inventory->amount, 0, ',', '.') }}</td>
-                            <td>Rp{{ number_format($out->quantity_out * $out->inventory->amount, 0, ',', '.') }}</td>
-                            <td>{{ $out->receiver }}</td>
-                            <td>{{ $out->created_at->format('d-m-Y H:i') }}</td>
+                            <th>Tanggal</th>
+                            <th>Bahan</th>
+                            <th class="t-right">Jumlah</th>
+                            <th class="t-right">Harga / satuan</th>
+                            <th class="t-right">Nilai</th>
+                            <th>Penerima</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
+                    </thead>
+                    <tbody>
+                        @foreach ($inventory_outs as $out)
+                            @php $inv = $out->inventory; @endphp
+                            <tr>
+                                <td>
+                                    <div>{{ $out->created_at->translatedFormat('d M Y') }}</div>
+                                    <div class="cell-sub">{{ $out->created_at->format('H:i') }}</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">{{ $inv->nama_bahan ?? 'Batch dihapus' }}</div>
+                                    @if ($out->description)
+                                        <div class="cell-sub text-truncate" style="max-width:280px">{{ $out->description }}</div>
+                                    @endif
+                                </td>
+                                <td class="t-right num font-weight-bold">{{ $out->quantity_out }} <span class="text-muted font-weight-normal">{{ $inv->satuan ?? '' }}</span></td>
+                                <td class="t-right num">Rp {{ $rp($inv->amount ?? 0) }}</td>
+                                <td class="t-right num font-weight-bold">Rp {{ $rp($out->quantity_out * ($inv->amount ?? 0)) }}</td>
+                                <td>{{ $out->receiver }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             {{ $inventory_outs->links() }}
-        </div>
+        @endif
     </section>
-</div>
 @endsection

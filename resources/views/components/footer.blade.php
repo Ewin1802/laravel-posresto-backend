@@ -1,8 +1,4 @@
-<footer class="main-footer">
-    <div class="footer-left">
-        Copyright &copy; 2025 <div class="bullet"></div> Design By <a href="https://www.instagram.com/ewin.lntp/">Ewin Lantapa</a>
-    </div>
-    <div class="footer-right">
-        1.0.0
-    </div>
+<footer class="app-footer">
+    <span>&copy; {{ date('Y') }} ARCH Manajemen. Dirancang oleh <a href="https://www.instagram.com/ewin.lntp/" target="_blank" rel="noopener">Ewin Lantapa</a>.</span>
+    <span>Versi 2.0</span>
 </footer>

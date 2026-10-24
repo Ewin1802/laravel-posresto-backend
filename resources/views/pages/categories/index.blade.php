@@ -1,128 +1,74 @@
 @extends('layouts.app')
 
-@section('title', 'Categories')
-{{-- Favicon - Logo web disamping title --}}
-<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
-@endpush
+@section('title', 'Kategori')
+@section('crumb', 'Data umum')
 
 @section('main')
-    <div class="main-content">
-        <section class="section">
-            <div class="section-header">
-                <h1>Kategori</h1>
-                <div class="section-header-button">
-                    <a href="{{ route('categories.create') }}" class="btn btn-primary">Tambah Kategori</a>
-                </div>
-                <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Kategori</a></div>
-                    <div class="breadcrumb-item">Semua Kategori</div>
-                </div>
-            </div>
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        @include('layouts.alert')
-                    </div>
-                </div>
-
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Semua Kategori</h4>
-                            </div>
-                            <div class="card-body">
-
-                                <div class="float-right">
-                                    <form method="GET" action="{{ route('categories.index') }}">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search" name="name">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="clearfix mb-3"></div>
-
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Create At</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        @foreach ($categories as $category)
-                                            <tr>
-                                                <td>
-                                                    {{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}
-                                                </td>
-                                                <td>{{ $category->name }}
-                                                </td>
-
-                                                <td>{{ $category->created_at }}</td>
-                                                <td>
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('categories.edit', $category->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('categories.destroy', $category->id) }}"
-                                                            method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $categories->withQueryString()->links() }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div class="page-head">
+        <div>
+            <h1 class="page-head__title">Kategori</h1>
+            <p class="page-head__lead">Kelompok menu yang tampil sebagai tab di aplikasi kasir dan halaman publik.</p>
+        </div>
+        <div class="page-head__actions">
+            <a href="{{ route('categories.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah kategori</a>
+        </div>
     </div>
+
+    @include('layouts.alert')
+
+    <section class="panel">
+        <div class="panel__head">
+            <form method="GET" action="{{ route('categories.index') }}" class="toolbar">
+                <div class="search">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" name="name" value="{{ $search }}" placeholder="Cari kategori" aria-label="Cari kategori">
+                </div>
+                @if ($search)
+                    <a href="{{ route('categories.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+                @endif
+            </form>
+            <span class="count-chip">{{ $categories->total() }} kategori</span>
+        </div>
+
+        @if ($categories->isEmpty())
+            <div class="empty">
+                <div class="empty__icon"><i class="fas fa-layer-group"></i></div>
+                <h3>{{ $search ? 'Kategori tidak ditemukan' : 'Belum ada kategori' }}</h3>
+                <p>{{ $search ? 'Coba kata kunci lain.' : 'Buat kategori seperti Kopi, Non-kopi, atau Makanan sebelum menambahkan produk.' }}</p>
+                @unless ($search)
+                    <a href="{{ route('categories.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah kategori</a>
+                @endunless
+            </div>
+        @else
+            <div class="tile-grid">
+                @foreach ($categories as $category)
+                    <article class="tile">
+                        <div class="tile__media" @if ($category->image) style="background-image:url('{{ asset($category->image) }}')" @endif>
+                            @unless ($category->image)
+                                <i class="fas fa-image"></i>
+                            @endunless
+                        </div>
+                        <div class="tile__body">
+                            <h3 class="tile__title">{{ $category->name }}</h3>
+                            <p class="tile__text">{{ $category->description ?: 'Tanpa deskripsi' }}</p>
+                        </div>
+                        <div class="tile__foot">
+                            <span class="tag tag--plain">{{ $category->products_count }} produk</span>
+                            <span>
+                                <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-light btn-sm" aria-label="Ubah {{ $category->name }}"><i class="fas fa-pen"></i></a>
+                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline"
+                                    data-confirm="{{ $category->products_count > 0 ? 'Kategori ini masih dipakai ' . $category->products_count . ' produk, sehingga tidak akan bisa dihapus sebelum produknya dipindahkan.' : 'Kategori ' . $category->name . ' akan dihapus permanen.' }}"
+                                    data-confirm-title="Hapus kategori?">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-ghost-danger btn-sm" aria-label="Hapus {{ $category->name }}"><i class="fas fa-trash-can"></i></button>
+                                </form>
+                            </span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+            {{ $categories->links() }}
+        @endif
+    </section>
 @endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-    <script src="{{ asset('library/selectric/public/jquery.selectric.min.js') }}"></script>
-
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/features-posts.js') }}"></script>
-    {{-- confirm delete --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.confirm-delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (event) {
-                    const confirmed = confirm('Are you sure you want to delete this category?');
-                    if (!confirmed) {
-                        event.preventDefault(); // Membatalkan aksi penghapusan jika user memilih "Cancel"
-                    }
-                });
-            });
-        });
-    </script>
-@endpush

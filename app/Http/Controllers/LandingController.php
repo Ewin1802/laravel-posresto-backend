@@ -10,7 +10,7 @@ class LandingController extends Controller
 {
     public function index(Request $request)
 {
-    $range = $request->get('range', 30);
+    $range = (int) $request->get('range', 30);
     if (!in_array($range, [7, 30, 90])) {
         $range = 30;
     }
@@ -21,13 +21,15 @@ class LandingController extends Controller
         ->select(
             'products.id',
             'products.name',
+            'products.image',
+            'products.category_id',
             DB::raw('SUM(order_items.quantity) as total_qty'),
             DB::raw('MAX(order_items.price) as unit_price')
         )
         ->havingRaw('SUM(order_items.quantity) > 0')
 
         ->where('order_items.created_at', '>=', Carbon::now()->subDays($range))
-        ->groupBy('products.id', 'products.name')
+        ->groupBy('products.id', 'products.name', 'products.image', 'products.category_id')
         ->orderByDesc('total_qty')
         ->limit(10)
         ->get();
@@ -51,7 +53,9 @@ class LandingController extends Controller
         ->orderBy('category_id')
         ->orderBy('name')
         ->get();
+    // Hanya kategori yang punya menu aktif, agar filter tidak kosong.
     $categories = DB::table('categories')
+        ->whereIn('id', $menuProducts->pluck('category_id')->unique())
         ->orderBy('name')
         ->get();
 

@@ -23,6 +23,8 @@ class Order extends Model
         'nama_kasir',
         'transaction_time',
         'customer_name',
+        'status',
+        'table_number',
     ];
 
     public function orderItems()

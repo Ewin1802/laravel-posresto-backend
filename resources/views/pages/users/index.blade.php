@@ -1,159 +1,98 @@
 @extends('layouts.app')
 
-@section('title', 'Users')
-{{-- Favicon - Logo web disamping title --}}
-<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
-@push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
-@endpush
+@section('title', 'Pengguna')
+@section('crumb', 'Data umum')
 
 @section('main')
-    <div class="main-content">
-        <section class="section">
-            <div class="section-header">
-                <h1>Users</h1>
-                <div class="section-header-button">
-                    <a href="{{ route('users.create') }}" class="btn btn-primary">Tambah User</a>
-                </div>
-                <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Users</a></div>
-                    <div class="breadcrumb-item">Semua User</div>
-                </div>
-            </div>
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        @include('layouts.alert')
-                    </div>
-                </div>
-                {{-- <h2 class="section-title">Users</h2>
-                <p class="section-lead">
-                    You can manage all Users, such as editing, deleting and more.
-                </p> --}}
-
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Semua User</h4>
-                            </div>
-                            <div class="card-body">
-                                {{-- <div class="float-left">
-                                    <select class="form-control selectric">
-                                        <option>Action For Selected</option>
-                                        <option>Move to Draft</option>
-                                        <option>Move to Pending</option>
-                                        <option>Delete Pemanently</option>
-                                    </select>
-                                </div> --}}
-                                <div class="float-right">
-                                    <form method="GET" action="{{ route('users.index') }}">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search" name="name">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="clearfix mb-3"></div>
-
-                                <div class="table-responsive">
-                                    <table class="table-striped table">
-                                        <tr>
-
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Rule</th>
-                                            <th>Created At</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        @foreach ($users as $user)
-                                            <tr>
-
-                                                <td>{{ $user->name }}
-                                                </td>
-                                                <td>
-                                                    {{ $user->email }}
-                                                </td>
-                                                <td>
-                                                    {{ $user->role }}
-                                                </td>
-                                                <td>{{ $user->created_at }}</td>
-                                                <td>
-                                                    {{-- <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('users.edit', $user->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('users.destroy', $user->id) }}"
-                                                            method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token"
-                                                                value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div> --}}
-                                                    <div class="d-flex justify-content-center">
-                                                        <a href='{{ route('users.edit', $user->id) }}'
-                                                            class="btn btn-sm btn-info btn-icon">
-                                                            <i class="fas fa-edit"></i>
-                                                            Edit
-                                                        </a>
-
-                                                        <form action="{{ route('users.destroy', $user->id) }} " method="POST" class="ml-2">
-                                                            <input type="hidden" name="_method" value="DELETE" />
-                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                                            <button class="btn btn-sm btn-danger btn-icon" onclick="return confirm('Butul mo hapus ini data?')">
-                                                                <i class="fas fa-times"></i> Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-
-                                    </table>
-                                </div>
-                                <div class="float-right">
-                                    {{ $users->withQueryString()->links() }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div class="page-head">
+        <div>
+            <h1 class="page-head__title">Pengguna</h1>
+            <p class="page-head__lead">Akun staf dan kasir yang dapat masuk ke aplikasi ARCH. Akun admin tidak ditampilkan di sini.</p>
+        </div>
+        <div class="page-head__actions">
+            <a href="{{ route('users.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah pengguna</a>
+        </div>
     </div>
+
+    @include('layouts.alert')
+
+    <section class="panel">
+        <div class="panel__head">
+            <form method="GET" action="{{ route('users.index') }}" class="toolbar">
+                <div class="search">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" name="name" value="{{ $search }}" placeholder="Cari nama atau email" aria-label="Cari pengguna">
+                </div>
+                <select name="role" class="custom-select" style="width:auto" onchange="this.form.submit()" aria-label="Filter peran">
+                    <option value="">Semua peran</option>
+                    <option value="staff" @selected($role === 'staff')>Staff ({{ $roleCounts['staff'] ?? 0 }})</option>
+                    <option value="user" @selected($role === 'user')>User ({{ $roleCounts['user'] ?? 0 }})</option>
+                </select>
+                @if ($search || $role)
+                    <a href="{{ route('users.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+                @endif
+            </form>
+            <span class="count-chip">{{ $users->total() }} pengguna</span>
+        </div>
+
+        @if ($users->isEmpty())
+            <div class="empty">
+                <div class="empty__icon"><i class="fas fa-user-group"></i></div>
+                <h3>{{ $search || $role ? 'Tidak ada pengguna yang cocok' : 'Belum ada pengguna' }}</h3>
+                <p>{{ $search || $role ? 'Coba kata kunci lain atau hapus filter.' : 'Tambahkan akun untuk staf atau kasir agar bisa masuk ke aplikasi.' }}</p>
+                @unless ($search || $role)
+                    <a href="{{ route('users.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah pengguna</a>
+                @endunless
+            </div>
+        @else
+            <div class="table-scroll">
+                <table class="table-x">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Peran</th>
+                            <th>Terdaftar</th>
+                            <th class="t-actions"><span class="sr-only">Aksi</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $user)
+                            @php
+                                $initials = collect(explode(' ', trim($user->name)))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
+                            @endphp
+                            <tr>
+                                <td>
+                                    <div class="cell-media">
+                                        <span class="avatar-sm">{{ $initials }}</span>
+                                        <div>
+                                            <div class="cell-main">{{ $user->name }}</div>
+                                            <div class="cell-sub">{{ $user->email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="tag {{ $user->role === 'staff' ? 'tag--gold' : '' }} text-capitalize">{{ $user->role }}</span>
+                                </td>
+                                <td>
+                                    <div>{{ $user->created_at?->translatedFormat('d M Y') }}</div>
+                                    <div class="cell-sub">{{ $user->created_at?->diffForHumans() }}</div>
+                                </td>
+                                <td class="t-actions">
+                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-light btn-sm"><i class="fas fa-pen"></i> Ubah</a>
+                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline"
+                                        data-confirm="Akun {{ $user->name }} akan dihapus dan tidak bisa lagi masuk ke aplikasi kasir."
+                                        data-confirm-title="Hapus pengguna?">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-ghost-danger btn-sm" aria-label="Hapus {{ $user->name }}"><i class="fas fa-trash-can"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            {{ $users->links() }}
+        @endif
+    </section>
 @endsection
-
-@push('scripts')
-    <!-- JS Libraies -->
-    <script src="{{ asset('library/selectric/public/jquery.selectric.min.js') }}"></script>
-
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/features-posts.js') }}"></script>
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.confirm-delete');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function (event) {
-                    const confirmed = confirm('Yakin mo hapus ini orang?');
-                    if (!confirmed) {
-                        event.preventDefault(); // Membatalkan aksi penghapusan jika user memilih "Cancel"
-                    }
-                });
-            });
-        });
-    </script> --}}
-@endpush

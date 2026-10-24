@@ -1,224 +1,144 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Persediaan')
+@section('title', 'Laporan persediaan')
+@section('crumb', 'Laporan')
 
-{{-- Favicon --}}
-<link rel="icon" href="{{ asset('img/logo_arch_web.png') }}" type="image/png">
+@php
+    $rp = fn ($v) => number_format((float) $v, 0, ',', '.');
+    $rangeLabel = \Carbon\Carbon::parse($start_date)->translatedFormat('d M Y') . ' – ' . \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y');
+@endphp
 
 @push('style')
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('library/selectric/public/selectric.css') }}">
     <style>
-        /* Styling tabel */
-        .styled-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 2px solid #444; /* Garis tepi tabel */
-            background-color: #fff;
-        }
-
-        /* Styling header tabel */
-        .styled-table thead {
-            background-color: #4E342E;
-            color: white;
-        }
-
-        .styled-table th {
-            padding: 12px;
-            border: 2px solid #ddd; /* Garis antar kolom soft */
-            text-align: center;
-        }
-
-        /* Styling isi tabel */
-        .styled-table td {
-            padding: 10px;
-            border: 1px solid #ddd; /* Warna soft antar kolom */
-            text-align: center;
-            font-weight: normal; /* Hapus cetak tebal */
-        }
-
-        /* Warna selang-seling antar baris */
-        .styled-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa; /* Warna abu-abu sangat soft */
-        }
-
-        /* Pemisah antar bahan tanpa baris kosong */
-        .separator td {
-            border-top: 3px solid #4E342E !important; /* Garis pemisah antar bahan */
-        }
+        .stock-table td { vertical-align: middle; }
+        .stock-table tbody td:first-child { padding-left: 16px; }
+        .stock-table tbody td.batch-cell:first-child { padding-left: 22px; }
+        .stock-table .batch-cell { background: var(--surface-2); }
+        .stock-table tr.batch-start td { border-top: 2px solid var(--line-strong); }
+        .stock-table tbody tr:first-child td { border-top: 0; }
+        .stock-table th.group { text-align: center; color: var(--ink-2); border-bottom: 1px dashed var(--line-strong); }
     </style>
 @endpush
 
 @section('main')
-    <div class="main-content">
-        <section class="section">
-            <div class="section-header">
-                <h1>Laporan Persediaan</h1>
-                <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item"><a href="#">Laporan</a></div>
-                    <div class="breadcrumb-item">Laporan Persediaan</div>
-                </div>
-            </div>
-
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-12">
-                        @include('layouts.alert')
-                    </div>
-                </div>
-
-                <!-- Card Filter -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h4>Filter Berdasarkan Tanggal</h4>
-                            </div>
-
-                            <div class="card-body">
-                                @if (session('error'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <strong>Error!</strong> {{ session('error') }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                @endif
-
-                                <form method="GET" action="{{ route('inventory.reports') }}">
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <label for="start_date">Dari Tanggal:</label>
-                                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date', $start_date) }}" required>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <label for="end_date">Sampai Tanggal:</label>
-                                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date', $end_date) }}" required>
-                                        </div>
-                                        <div class="col-md-2 d-flex align-items-end">
-                                            <button type="submit" class="btn btn-primary w-100">
-                                                <i class="fas fa-filter"></i> Filter
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabel Data Persediaan -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Stok Persediaan Saat Ini</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="styled-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Nama Bahan</th>
-                                                <th>Tanggal Masuk</th>
-                                                <th>Satuan</th>
-                                                <th>Jumlah Masuk</th>
-                                                <th>Harga</th>
-                                                <th>Total (Masuk)</th>
-                                                <th>Jumlah Keluar</th>
-                                                <th>Harga</th>
-                                                <th>Total (Keluar)</th>
-                                                <th>Tanggal Keluar</th>
-                                                <th>Penerima</th>
-                                                <th>Sisa Stok</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            @php
-                                                $previousBahanId = null;
-                                            @endphp
-
-                                            @forelse($inventoryReport as $item)
-                                                @php
-                                                    $firstRow = true;
-                                                    $sisaStok = $item->saldo_awal; // Mulai dari saldo awal
-                                                @endphp
-
-                                                @foreach($item->inventoryOut as $out)
-                                                @php
-                                                    // Hitung Sisa Stok per transaksi keluar
-                                                    $sisaStok -= $out->quantity_out;
-
-                                                    // Tambahkan class "separator" jika bahan_id berubah
-                                                    $rowClass = ($previousBahanId !== null && $previousBahanId !== $item->bahan_id) ? 'separator' : '';
-                                                @endphp
-
-                                                <tr class="{{ $rowClass }}">
-                                                    @if ($firstRow)
-                                                        <td>{{ $item->bahan->nama_bahan }}</td>
-                                                        <td>{{ $item->tanggal_masuk ? \Carbon\Carbon::parse($item->tanggal_masuk)->format('d-m-Y H:i') : '-' }}</td> <!-- Perbaikan disini -->
-                                                        <td>{{ $item->satuan }}</td>
-                                                        <td>{{ $item->saldo_awal }}</td>
-                                                        <td>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
-                                                        <td>Rp {{ number_format($item->saldo_awal * $item->harga_satuan, 0, ',', '.') }}</td>
-                                                        @php $firstRow = false; @endphp
-                                                    @else
-                                                        <td></td><td></td><td></td><td></td><td></td><td></td>
-                                                    @endif
-
-                                                    <td>{{ $out->quantity_out }}</td>
-                                                    <td>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
-                                                    <td>Rp {{ number_format($out->quantity_out * $item->harga_satuan, 0, ',', '.') }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($out->created_at)->format('d-m-Y H:i') }}</td>
-                                                    <td>{{ $out->receiver ?? '-' }}</td> <!-- Menampilkan Nama Penerima -->
-                                                    <td>{{ $sisaStok }}</td>
-                                                </tr>
-
-                                                @php
-                                                    // Pindahkan pembaruan previousBahanId ke dalam loop agar selalu diperbarui
-                                                    $previousBahanId = $item->bahan_id;
-                                                @endphp
-                                                @endforeach
-
-
-                                                @if ($item->inventoryOut->isEmpty())
-                                                    @php
-                                                        $rowClass = ($previousBahanId !== null && $previousBahanId !== $item->bahan_id) ? 'separator' : '';
-                                                    @endphp
-                                                    <tr class="{{ $rowClass }}">
-                                                        <td>{{ $item->bahan->nama_bahan }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d-m-Y H:i') }}</td>
-                                                        <td>{{ $item->satuan }}</td>
-                                                        <td>{{ $item->saldo_awal }}</td>
-                                                        <td>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
-                                                        <td>Rp {{ number_format($item->saldo_awal * $item->harga_satuan, 0, ',', '.') }}</td>
-                                                        <td colspan="4" class="text-center">Belum ada pengeluaran</td>
-                                                        <td>{{ $item->saldo_awal }}</td> <!-- Jika tidak ada keluar, sisa stok = saldo awal -->
-                                                    </tr>
-
-                                                    @php
-                                                        $previousBahanId = $item->bahan_id;
-                                                    @endphp
-                                                @endif
-                                            @empty
-                                                <tr>
-                                                    <td colspan="11" class="text-center">Tidak ada data</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div class="float-right">
-                                    {{ $inventoryReport->appends(request()->query())->links() }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div class="page-head">
+        <div>
+            <h1 class="page-head__title">Laporan persediaan</h1>
+            <p class="page-head__lead">Batch yang masuk {{ $rangeLabel }}, beserta pengeluaran dan sisa stoknya.</p>
+        </div>
     </div>
+
+    @include('layouts.alert')
+
+    @include('pages.partials.range-filter', [
+        'action' => route('inventory.reports'),
+        'start' => $start_date,
+        'end' => $end_date,
+    ])
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="stat">
+                <div class="stat__label"><i class="fas fa-arrow-right-to-bracket"></i> Nilai masuk</div>
+                <div class="stat__value"><small>Rp</small>{{ $rp($totals->masuk) }}</div>
+                <div class="stat__meta">{{ $rp($totals->batches) }} batch pembelian</div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="stat">
+                <div class="stat__label"><i class="fas fa-arrow-right-from-bracket"></i> Nilai keluar</div>
+                <div class="stat__value"><small>Rp</small>{{ $rp($totals->keluar) }}</div>
+                <div class="stat__meta">Dari batch pada periode ini</div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="stat">
+                <div class="stat__label"><i class="fas fa-box"></i> Nilai sisa saat ini</div>
+                <div class="stat__value"><small>Rp</small>{{ $rp($totals->sisa) }}</div>
+                <div class="stat__meta">Sisa stok × harga satuan</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="panel">
+        <div class="panel__head">
+            <div>
+                <h2 class="panel__title">Kartu stok per batch</h2>
+                <p class="panel__sub">Sisa dihitung berurutan dari jumlah masuk dikurangi setiap pengeluaran</p>
+            </div>
+        </div>
+
+        @if ($inventoryReport->isEmpty())
+            <div class="empty">
+                <div class="empty__icon"><i class="fas fa-boxes-stacked"></i></div>
+                <h3>Tidak ada persediaan masuk</h3>
+                <p>Tidak ada pembelian bahan pada rentang tanggal ini.</p>
+            </div>
+        @else
+            <div class="table-scroll">
+                <table class="table-x stock-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Bahan</th>
+                            <th colspan="3" class="group">Masuk</th>
+                            <th colspan="4" class="group">Keluar</th>
+                            <th rowspan="2" class="t-right">Sisa</th>
+                        </tr>
+                        <tr>
+                            <th class="t-right">Jumlah</th>
+                            <th class="t-right">Harga</th>
+                            <th class="t-right">Nilai</th>
+                            <th>Tanggal</th>
+                            <th class="t-right">Jumlah</th>
+                            <th class="t-right">Nilai</th>
+                            <th>Penerima</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($inventoryReport as $item)
+                            @php
+                                $sisa = $item->saldo_awal;
+                                $outs = $item->inventoryOut;
+                                $rows = max(1, $outs->count());
+                                $nama = $item->bahan->nama_bahan ?? $item->nama_bahan;
+                            @endphp
+
+                            @for ($r = 0; $r < $rows; $r++)
+                                @php
+                                    $out = $outs[$r] ?? null;
+                                    if ($out) { $sisa -= $out->quantity_out; }
+                                @endphp
+                                <tr class="{{ $r === 0 ? 'batch-start' : '' }}">
+                                    @if ($r === 0)
+                                        <td rowspan="{{ $rows }}" class="batch-cell">
+                                            <div class="cell-main">{{ $nama }}</div>
+                                            <div class="cell-sub">{{ $item->tanggal_masuk ? \Carbon\Carbon::parse($item->tanggal_masuk)->translatedFormat('d M Y, H:i') : '-' }}</div>
+                                            @if ($item->supplier)
+                                                <div class="cell-sub">{{ $item->supplier }}</div>
+                                            @endif
+                                        </td>
+                                        <td rowspan="{{ $rows }}" class="t-right num batch-cell">{{ $item->saldo_awal }} <span class="text-muted">{{ $item->satuan }}</span></td>
+                                        <td rowspan="{{ $rows }}" class="t-right num batch-cell">{{ $rp($item->harga_satuan) }}</td>
+                                        <td rowspan="{{ $rows }}" class="t-right num batch-cell font-weight-bold">{{ $rp($item->saldo_awal * $item->harga_satuan) }}</td>
+                                    @endif
+
+                                    @if ($out)
+                                        <td class="num">{{ $out->created_at->translatedFormat('d M, H:i') }}</td>
+                                        <td class="t-right num">{{ $out->quantity_out }}</td>
+                                        <td class="t-right num">{{ $rp($out->quantity_out * $item->harga_satuan) }}</td>
+                                        <td>{{ $out->receiver ?: '—' }}</td>
+                                    @else
+                                        <td colspan="4" class="text-muted">Belum ada pengeluaran pada periode ini</td>
+                                    @endif
+
+                                    <td class="t-right num font-weight-bold {{ $sisa <= 0 ? 'text-red' : '' }}">{{ $sisa }}</td>
+                                </tr>
+                            @endfor
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            {{ $inventoryReport->links() }}
+        @endif
+    </section>
 @endsection

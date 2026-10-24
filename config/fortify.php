@@ -144,7 +144,9 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Registrasi publik dimatikan: akun baru hanya dibuat admin lewat menu Pengguna.
+        // (Sebelumnya siapa pun bisa daftar di /register lalu login ke API POS.)
+        // Features::registration(),
         Features::resetPasswords(),
         // Features::emailVerification(),
         Features::updateProfileInformation(),
