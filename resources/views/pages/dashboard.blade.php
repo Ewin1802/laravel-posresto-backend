@@ -110,10 +110,16 @@
                             @endif
                         </div>
 
+                        @php $monthProfit = $month['net'] - $monthExpense; @endphp
                         <ul class="ledger mb-3">
                             <li><span>Transaksi</span><span class="num">{{ $rp($month['orders']) }}</span></li>
-                            <li><span>Rata-rata per transaksi</span><span class="num">Rp {{ $rp($month['avg']) }}</span></li>
+                            <li><span>Pengeluaran</span><span class="num text-red">− Rp {{ $rp($monthExpense) }}</span></li>
+                            <li class="is-total">
+                                <span>Laba bersih</span>
+                                <span class="num {{ $monthProfit < 0 ? 'text-red' : 'text-sage' }}" style="font-size:20px">{{ $monthProfit < 0 ? '−' : '' }}Rp {{ $rp(abs($monthProfit)) }}</span>
+                            </li>
                         </ul>
+                        <a href="{{ route('financial.report') }}" class="btn btn-light btn-sm btn-block mb-4">Buka analisa keuangan</a>
 
                         <div class="cell-sub mb-2">Metode pembayaran</div>
                         @php $payTotal = max(1, $payments->sum('net')); @endphp
@@ -217,50 +223,50 @@
                 <section class="panel">
                     <div class="panel__head">
                         <div>
-                            <h2 class="panel__title">Persediaan menipis</h2>
-                            <p class="panel__sub">Sisa stok 20% atau kurang dari jumlah pembelian</p>
+                            <h2 class="panel__title">Pengeluaran bulan ini</h2>
+                            <p class="panel__sub">Pos biaya terbesar dan catatan terakhir</p>
                         </div>
-                        <a href="{{ route('inventories.index', ['stock' => 'low']) }}" class="btn btn-ghost btn-sm">Kelola</a>
+                        <a href="{{ route('expenses.create') }}" class="btn btn-ghost btn-sm"><i class="fas fa-plus"></i> Catat</a>
                     </div>
-                    @if ($lowStock->isEmpty())
+                    @if ($expenseByCategory->isEmpty() && $recentExpenses->isEmpty())
                         <div class="empty" style="padding:36px 24px">
-                            <div class="empty__icon"><i class="fas fa-box-open"></i></div>
-                            <h3>Stok aman</h3>
-                            <p>Tidak ada bahan yang hampir habis.</p>
+                            <div class="empty__icon"><i class="fas fa-wallet"></i></div>
+                            <h3>Belum ada pengeluaran</h3>
+                            <p>Catat belanja dan biaya operasional agar laba bersih bisa dihitung.</p>
+                            <a href="{{ route('expenses.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Catat pengeluaran</a>
                         </div>
                     @else
-                        <div class="table-scroll">
-                            <table class="table-x">
-                                <thead>
-                                    <tr>
-                                        <th>Bahan</th>
-                                        <th style="width:38%">Sisa</th>
-                                        <th class="t-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($lowStock as $s)
-                                        @php $ratio = $s->saldo_awal > 0 ? max(0, $s->quantity) / $s->saldo_awal : 0; @endphp
-                                        <tr>
-                                            <td>
-                                                <div class="cell-main">{{ $s->nama_bahan }}</div>
-                                                <div class="cell-sub">Masuk {{ $s->tanggal_masuk ? \Carbon\Carbon::parse($s->tanggal_masuk)->translatedFormat('d M Y') : '-' }}</div>
-                                            </td>
-                                            <td>
-                                                <div class="num" style="font-size:13px">{{ $s->quantity }} / {{ $s->saldo_awal }} {{ $s->satuan }}</div>
-                                                <div class="meter meter--red mt-1"><span style="width: {{ max(2, $ratio * 100) }}%"></span></div>
-                                            </td>
-                                            <td class="t-right">
-                                                @if ($s->quantity <= 0)
-                                                    <span class="tag tag--red">Habis</span>
-                                                @else
-                                                    <span class="tag tag--amber">Menipis</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="panel__body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    @php $maxExp = max(1, (float) $expenseByCategory->max('total')); @endphp
+                                    @forelse ($expenseByCategory as $row)
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between" style="font-size:13.5px; gap:10px">
+                                                <span><i class="fas {{ \App\Models\Expense::categoryIcon($row->category) }} text-muted mr-1"></i> {{ \App\Models\Expense::categoryLabel($row->category) }}</span>
+                                                <span class="num font-weight-bold">Rp {{ $rp($row->total) }}</span>
+                                            </div>
+                                            <div class="meter {{ $loop->first ? 'meter--red' : '' }} mt-1"><span style="width: {{ max(2, $row->total / $maxExp * 100) }}%"></span></div>
+                                        </div>
+                                    @empty
+                                        <p class="text-muted">Belum ada pengeluaran bulan ini.</p>
+                                    @endforelse
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="ledger">
+                                        @foreach ($recentExpenses as $e)
+                                            <li>
+                                                <span>
+                                                    <span class="d-block" style="color:var(--ink); font-weight:600">{{ \Illuminate\Support\Str::limit($e->description, 34) }}</span>
+                                                    <span class="cell-sub">{{ $e->expense_date->translatedFormat('d M') }} · {{ \App\Models\Expense::categoryLabel($e->category) }}</span>
+                                                </span>
+                                                <span class="num">Rp {{ $rp($e->amount) }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    <a href="{{ route('expenses.index') }}" class="btn btn-light btn-sm mt-2">Lihat semua pengeluaran</a>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </section>
@@ -277,9 +283,9 @@
                     </div>
                     <div class="col-6">
                         <div class="stat">
-                            <div class="stat__label"><i class="fas fa-box-open"></i> Batch habis</div>
-                            <div class="stat__value {{ $counts['out_of_stock'] > 0 ? 'text-red' : '' }}">{{ $counts['out_of_stock'] }}</div>
-                            <div class="stat__meta">Stok bahan bernilai 0</div>
+                            <div class="stat__label"><i class="fas fa-wallet"></i> Keluar hari ini</div>
+                            <div class="stat__value" style="font-size:22px"><small>Rp</small>{{ $rp($todayExpense) }}</div>
+                            <div class="stat__meta"><a href="{{ route('expenses.create') }}">Catat pengeluaran</a></div>
                         </div>
                     </div>
                 </div>
