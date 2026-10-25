@@ -17,11 +17,9 @@
             ],
         ],
         [
-            'title' => 'Persediaan',
+            'title' => 'Keuangan',
             'items' => [
-                ['label' => 'Daftar bahan', 'icon' => 'fa-seedling', 'route' => 'bahans.index', 'match' => ['bahans', 'bahans/*']],
-                ['label' => 'Persediaan masuk', 'icon' => 'fa-arrow-right-to-bracket', 'route' => 'inventories.index', 'match' => ['inventories', 'inventories/*']],
-                ['label' => 'Persediaan keluar', 'icon' => 'fa-arrow-right-from-bracket', 'route' => 'inventory_out.index', 'match' => ['inventory_out', 'inventory_out/*']],
+                ['label' => 'Pengeluaran', 'icon' => 'fa-wallet', 'route' => 'expenses.index', 'match' => ['expenses', 'expenses/*']],
             ],
         ],
         [
@@ -29,7 +27,6 @@
             'items' => [
                 ['label' => 'Laporan penjualan', 'icon' => 'fa-receipt', 'route' => 'order_reports.index', 'match' => ['order-reports*', 'order', 'order/*']],
                 ['label' => 'Produk terlaris', 'icon' => 'fa-ranking-star', 'route' => 'top.products', 'match' => ['top-products*']],
-                ['label' => 'Laporan persediaan', 'icon' => 'fa-boxes-stacked', 'route' => 'inventory.reports', 'match' => ['inventory-reports*']],
                 ['label' => 'Analisa keuangan', 'icon' => 'fa-chart-line', 'route' => 'financial.report', 'match' => ['laporan-keuangan*']],
             ],
         ],

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
+use App\Models\Expense;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -87,19 +87,26 @@ class DashboardController extends Controller
             ->limit(7)
             ->get(['id', 'customer_name', 'total', 'payment_method', 'total_item', 'nama_kasir', 'created_at', 'transaction_time']);
 
-        // Persediaan menipis: sisa <= 20% dari pembelian awal.
-        $lowStock = Inventory::query()
-            ->where('saldo_awal', '>', 0)
-            ->whereRaw('quantity <= saldo_awal * 0.2')
-            ->orderByRaw('quantity / saldo_awal asc')
-            ->latest('tanggal_masuk')
-            ->limit(6)
-            ->get(['id', 'nama_bahan', 'quantity', 'saldo_awal', 'satuan', 'tanggal_masuk']);
+        // Pengeluaran (pembanding laba).
+        $monthExpense = (float) Expense::whereBetween('expense_date', [$monthStart->toDateString(), $now->toDateString()])->sum('amount');
+        $prevMonthExpense = (float) Expense::whereBetween('expense_date', [$prevMonthStart->toDateString(), $prevMonthEnd->toDateString()])->sum('amount');
+        $todayExpense = (float) Expense::whereDate('expense_date', $now->toDateString())->sum('amount');
+
+        $expenseByCategory = Expense::whereBetween('expense_date', [$monthStart->toDateString(), $now->toDateString()])
+            ->selectRaw('category, COALESCE(SUM(amount),0) as total')
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        $recentExpenses = Expense::query()
+            ->orderByDesc('expense_date')->orderByDesc('id')
+            ->limit(5)
+            ->get(['id', 'category', 'description', 'amount', 'expense_date']);
 
         $counts = [
             'products' => DB::table('products')->where('status', 1)->count(),
             'categories' => DB::table('categories')->count(),
-            'out_of_stock' => Inventory::where('quantity', '<=', 0)->count(),
         ];
 
         return view('pages.dashboard', [
@@ -113,7 +120,11 @@ class DashboardController extends Controller
             'payments' => $payments,
             'topProducts' => $topProducts,
             'recentOrders' => $recentOrders,
-            'lowStock' => $lowStock,
+            'monthExpense' => $monthExpense,
+            'prevMonthExpense' => $prevMonthExpense,
+            'todayExpense' => $todayExpense,
+            'expenseByCategory' => $expenseByCategory,
+            'recentExpenses' => $recentExpenses,
             'counts' => $counts,
         ]);
     }

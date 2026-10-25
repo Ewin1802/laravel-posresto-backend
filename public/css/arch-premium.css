@@ -1057,3 +1057,21 @@ html.sb-preload .sidebar, html.sb-preload .main, html.sb-preload .hamb i { trans
 
 /* Kolom pencarian dihapus dari navbar: grup kanan didorong ke ujung */
 .topbar__bar .topbar__right { margin-left: auto; }
+
+/* ---------- Pilihan kategori pengeluaran ---------- */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.cat-tile { margin: 0; position: relative; }
+.cat-tile input { position: absolute; opacity: 0; pointer-events: none; }
+.cat-tile span {
+    display: flex; align-items: center; gap: 10px;
+    height: 52px; padding: 0 14px; border-radius: 12px;
+    border: 1px solid var(--line-strong); background: #fff;
+    font-size: 13.5px; font-weight: 600; color: var(--ink-2); cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.cat-tile span i { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--porcelain); font-size: 12px; transition: background .15s ease, color .15s ease; }
+.cat-tile span:hover { border-color: var(--ink-2); color: var(--ink); }
+.cat-tile input:checked + span { border-color: var(--roast-800); background: var(--roast-800); color: #fff; box-shadow: 0 10px 24px -14px rgba(34, 26, 22, .6); }
+.cat-tile input:checked + span i { background: var(--red); color: #fff; }
+.cat-tile input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 2px; }
+button.chip { cursor: pointer; font-family: var(--font-ui); }

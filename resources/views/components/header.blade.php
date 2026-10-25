@@ -11,12 +11,9 @@
             ['Kategori', 'fa-layer-group', 'categories.index', 'Data umum'],
             ['Diskon', 'fa-percent', 'discounts.index', 'Data umum'],
             ['Pengguna', 'fa-user-group', 'users.index', 'Data umum'],
-            ['Daftar bahan', 'fa-seedling', 'bahans.index', 'Persediaan'],
-            ['Persediaan masuk', 'fa-arrow-right-to-bracket', 'inventories.index', 'Persediaan'],
-            ['Persediaan keluar', 'fa-arrow-right-from-bracket', 'inventory_out.index', 'Persediaan'],
+            ['Pengeluaran', 'fa-wallet', 'expenses.index', 'Keuangan biaya belanja'],
             ['Laporan penjualan', 'fa-receipt', 'order_reports.index', 'Laporan'],
             ['Produk terlaris', 'fa-ranking-star', 'top.products', 'Laporan'],
-            ['Laporan persediaan', 'fa-boxes-stacked', 'inventory.reports', 'Laporan'],
             ['Analisa keuangan', 'fa-chart-line', 'financial.report', 'Laporan'],
         ];
         foreach ($pages as [$l, $i, $r, $h]) {
@@ -24,8 +21,7 @@
         }
         $quick = [
             ['Tambah produk', 'fa-plus', 'products.create'],
-            ['Catat pembelian bahan', 'fa-cart-plus', 'inventories.create'],
-            ['Catat bahan keluar', 'fa-dolly', 'inventory_out.create'],
+            ['Catat pengeluaran', 'fa-wallet', 'expenses.create'],
             ['Tambah kategori', 'fa-folder-plus', 'categories.create'],
             ['Tambah diskon', 'fa-tag', 'discounts.create'],
             ['Tambah pengguna', 'fa-user-plus', 'users.create'],
@@ -72,8 +68,7 @@
                     <div class="dropdown-menu dropdown-menu-right menu-x">
                         <div class="menu-x__title">Buat baru</div>
                         <a class="dropdown-item" href="{{ route('products.create') }}"><span class="menu-x__ic"><i class="fas fa-mug-hot"></i></span><span><b>Produk</b><small>Menu baru di aplikasi kasir</small></span></a>
-                        <a class="dropdown-item" href="{{ route('inventories.create') }}"><span class="menu-x__ic"><i class="fas fa-cart-plus"></i></span><span><b>Pembelian bahan</b><small>Catat persediaan masuk</small></span></a>
-                        <a class="dropdown-item" href="{{ route('inventory_out.create') }}"><span class="menu-x__ic"><i class="fas fa-dolly"></i></span><span><b>Bahan keluar</b><small>Pemakaian dapur & bar</small></span></a>
+                        <a class="dropdown-item" href="{{ route('expenses.create') }}"><span class="menu-x__ic"><i class="fas fa-wallet"></i></span><span><b>Pengeluaran</b><small>Belanja, gaji, listrik, dan lainnya</small></span></a>
                         <a class="dropdown-item" href="{{ route('users.create') }}"><span class="menu-x__ic"><i class="fas fa-user-plus"></i></span><span><b>Pengguna</b><small>Akun staf atau kasir</small></span></a>
                     </div>
                 </div>

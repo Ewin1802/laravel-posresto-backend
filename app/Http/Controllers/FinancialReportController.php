@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\Inventory_out;
+use App\Models\Expense;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class FinancialReportController extends Controller
 {
+    /** Rumus penjualan bersih sama seperti Laporan penjualan: subtotal - diskon - pajak + service. */
+    private const NET = 'COALESCE(SUM(sub_total),0) - COALESCE(SUM(discount_amount),0) - COALESCE(SUM(tax),0) + COALESCE(SUM(service_charge),0)';
+
     public function index(Request $request)
     {
         $start_date = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
@@ -23,54 +25,70 @@ class FinancialReportController extends Controller
         $startDate = Carbon::parse($start_date)->startOfDay();
         $endDate = Carbon::parse($end_date)->endOfDay();
 
-        // Belanja persediaan = saldo awal x harga satuan (rumus lama, dihitung di database).
-        $totalPersediaan = (float) Inventory::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('COALESCE(SUM(saldo_awal * amount),0) as v')
-            ->value('v');
-
+        // ---- Penjualan (orders) ----
         $orderAgg = Order::whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('COUNT(*) as orders, COALESCE(SUM(sub_total),0) as sub_total, COALESCE(SUM(discount_amount),0) as discount, COALESCE(SUM(tax),0) as tax, COALESCE(SUM(service_charge),0) as service')
             ->first();
 
         $totalKeuangan = (float) $orderAgg->sub_total - (float) $orderAgg->discount - (float) $orderAgg->tax + (float) $orderAgg->service;
 
-        // Bahan yang benar-benar terpakai (persediaan keluar) dalam periode.
-        $bahanTerpakai = (float) Inventory_out::query()
-            ->join('inventories', 'inventories.id', '=', 'inventory_outs.inventory_id')
-            ->whereBetween('inventory_outs.created_at', [$startDate, $endDate])
-            ->selectRaw('COALESCE(SUM(inventory_outs.quantity_out * inventories.amount),0) as v')
-            ->value('v');
+        // ---- Pengeluaran (expenses) — pembanding utama ----
+        $expenseByCategory = Expense::whereBetween('expense_date', [$start_date, $end_date])
+            ->selectRaw('category, COUNT(*) as items, COALESCE(SUM(amount),0) as total')
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->get();
 
-        $selisih = $totalKeuangan - $totalPersediaan;
+        $totalPengeluaran = (float) $expenseByCategory->sum('total');
+
+        $selisih = $totalKeuangan - $totalPengeluaran;
         $margin = $totalKeuangan > 0 ? ($selisih / $totalKeuangan) * 100 : null;
 
-        // Arus mingguan / harian untuk grafik.
+        // ---- Periode sebelumnya dengan panjang sama, untuk pembanding tren ----
         $days = $startDate->diffInDays($endDate) + 1;
-        $groupExpr = $days > 62 ? "DATE_FORMAT(created_at, '%Y-%m')" : 'DATE(created_at)';
+        $prevEnd = $startDate->copy()->subDay()->endOfDay();
+        $prevStart = $prevEnd->copy()->subDays($days - 1)->startOfDay();
+        $prevSales = (float) Order::whereBetween('created_at', [$prevStart, $prevEnd])->selectRaw(self::NET . ' as v')->value('v');
+        $prevExpense = (float) Expense::whereBetween('expense_date', [$prevStart->toDateString(), $prevEnd->toDateString()])->sum('amount');
+        $prevProfit = $prevSales - $prevExpense;
+
+        // ---- Seri harian (≤ 62 hari) atau bulanan ----
+        $monthly = $days > 62;
+        $orderKey = $monthly ? "DATE_FORMAT(created_at, '%Y-%m')" : 'DATE(created_at)';
+        $expenseKey = $monthly ? "DATE_FORMAT(expense_date, '%Y-%m')" : 'DATE(expense_date)';
 
         $salesSeries = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw("{$groupExpr} as k, COALESCE(SUM(sub_total),0) - COALESCE(SUM(discount_amount),0) - COALESCE(SUM(tax),0) + COALESCE(SUM(service_charge),0) as v")
-            ->groupBy(DB::raw($groupExpr))
+            ->selectRaw("{$orderKey} as k, " . self::NET . ' as v')
+            ->groupBy(DB::raw($orderKey))
             ->pluck('v', 'k');
 
-        $spendSeries = Inventory::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw("{$groupExpr} as k, COALESCE(SUM(saldo_awal * amount),0) as v")
-            ->groupBy(DB::raw($groupExpr))
+        $expenseSeries = Expense::whereBetween('expense_date', [$start_date, $end_date])
+            ->selectRaw("{$expenseKey} as k, COALESCE(SUM(amount),0) as v")
+            ->groupBy(DB::raw($expenseKey))
             ->pluck('v', 'k');
 
-        $series = ['labels' => [], 'sales' => [], 'spend' => []];
+        $series = ['labels' => [], 'sales' => [], 'spend' => [], 'profit' => []];
         $cursor = $startDate->copy();
         while ($cursor->lte($endDate)) {
-            $key = $days > 62 ? $cursor->format('Y-m') : $cursor->toDateString();
-            $series['labels'][] = $days > 62 ? $cursor->translatedFormat('M Y') : $cursor->translatedFormat('d M');
-            $series['sales'][] = (float) ($salesSeries[$key] ?? 0);
-            $series['spend'][] = (float) ($spendSeries[$key] ?? 0);
-            $days > 62 ? $cursor->addMonthNoOverflow()->startOfMonth() : $cursor->addDay();
+            $key = $monthly ? $cursor->format('Y-m') : $cursor->toDateString();
+            $s = (float) ($salesSeries[$key] ?? 0);
+            $e = (float) ($expenseSeries[$key] ?? 0);
+            $series['labels'][] = $monthly ? $cursor->translatedFormat('M Y') : $cursor->translatedFormat('d M');
+            $series['sales'][] = $s;
+            $series['spend'][] = $e;
+            $series['profit'][] = $s - $e;
+            $monthly ? $cursor->addMonthNoOverflow()->startOfMonth() : $cursor->addDay();
         }
 
+        // Akumulasi laba berjalan (untuk garis kumulatif).
+        $running = 0;
+        $series['cumulative'] = array_map(function ($p) use (&$running) { return $running += $p; }, $series['profit']);
+
         return view('pages.financial.index', compact(
-            'startDate', 'endDate', 'start_date', 'end_date',
-            'totalPersediaan', 'totalKeuangan', 'bahanTerpakai', 'selisih', 'margin', 'orderAgg', 'series'
+            'startDate', 'endDate', 'start_date', 'end_date', 'monthly',
+            'totalKeuangan', 'totalPengeluaran', 'expenseByCategory',
+            'selisih', 'margin', 'orderAgg', 'series',
+            'prevSales', 'prevExpense', 'prevProfit', 'prevStart', 'prevEnd'
         ));
     }
 }

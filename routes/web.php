@@ -9,11 +9,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderItemController;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\InventoryOutController;
-use App\Http\Controllers\InventoryReportController;
-use App\Http\Controllers\BahanController;
 use App\Http\Controllers\FinancialReportController;
+use App\Http\Controllers\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,11 +51,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/top-products', [OrderItemController::class, 'index'])->name('top.products');
 
-        Route::resource('inventories', InventoryController::class)->except(['show', 'destroy']);
-        Route::resource('inventory_out', InventoryOutController::class)->only(['index', 'create', 'store']);
-        Route::resource('bahans', BahanController::class)->only(['index', 'store', 'edit', 'update', 'destroy']);
+        // Pengeluaran operasional (menggantikan modul persediaan bahan).
+        Route::resource('expenses', ExpenseController::class)->except(['show']);
 
-        Route::get('/inventory-reports', [InventoryReportController::class, 'index'])->name('inventory.reports');
         Route::get('/laporan-keuangan', [FinancialReportController::class, 'index'])->name('financial.report');
     });
 });
