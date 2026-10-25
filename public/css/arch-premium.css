@@ -1181,3 +1181,66 @@ button.chip { cursor: pointer; font-family: var(--font-ui); }
 
 .arch .guide__close:focus-visible { outline: 2px solid rgba(255, 255, 255, .7); outline-offset: 2px; }
 .guide-formula__total small { font-family: var(--font-ui); font-size: 12.5px; font-weight: 600; color: var(--sage); }
+
+/* =====================================================================
+   Pengingat perpanjangan cloud server
+   ===================================================================== */
+.renew {
+    display: grid; grid-template-columns: 48px minmax(0, 1fr) auto auto; gap: 18px; align-items: center;
+    padding: 16px 20px; margin-bottom: 24px; border-radius: var(--r-lg);
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1);
+    position: relative; overflow: hidden;
+}
+.renew::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--gold); }
+.renew__icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--gold-050); color: var(--gold); font-size: 18px; }
+.renew__title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 700; font-size: 15px; }
+.renew__text { margin: 3px 0 0; font-size: 13.5px; color: var(--muted); }
+.renew__text b { color: var(--ink); }
+.renew__meter { height: 4px; border-radius: 4px; background: var(--porcelain); overflow: hidden; margin-top: 10px; max-width: 420px; }
+.renew__meter span { display: block; height: 100%; border-radius: inherit; background: var(--gold); }
+.renew__count { text-align: right; line-height: 1; padding-left: 18px; border-left: 1px dashed var(--line-strong); }
+.renew__count strong { display: block; font-family: var(--font-display); font-size: 40px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: lining-nums tabular-nums; }
+.renew__count span { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+
+.renew--soon { background: var(--amber-050); border-color: #EBD3A6; }
+.renew--soon::before, .renew--soon .renew__meter span { background: var(--amber); }
+.renew--soon .renew__icon { background: #fff; color: var(--amber); }
+.renew--soon .renew__count strong { color: var(--amber); }
+.renew--urgent { background: var(--red-050); border-color: #F5C9CA; animation: renew-pulse 2.6s ease-in-out infinite; }
+.renew--urgent::before, .renew--urgent .renew__meter span { background: var(--red); }
+.renew--urgent .renew__icon { background: var(--red); color: #fff; }
+.renew--urgent .renew__count strong { color: var(--red); }
+@keyframes renew-pulse { 50% { box-shadow: 0 0 0 4px rgba(215, 20, 26, .12); } }
+
+@media (max-width: 767.98px) {
+    .renew { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px 14px; padding: 14px 16px; }
+    .renew__icon { width: 44px; height: 44px; }
+    .renew__count { padding-left: 12px; }
+    .renew__count strong { font-size: 30px; }
+    .renew__action { grid-column: 1 / -1; justify-self: start; }
+}
+
+/* kapsul di navbar */
+.renew-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 42px; padding: 0 13px; border-radius: 12px;
+    border: 1px solid #EADBB9; background: var(--gold-050); color: #6B4E17;
+    font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+.renew-pill i { color: var(--gold); }
+.renew-pill:hover { border-color: var(--gold); }
+.renew-pill--soon { background: var(--amber-050); border-color: #EBD3A6; color: var(--amber); }
+.renew-pill--soon i { color: var(--amber); }
+.renew-pill--urgent { background: var(--red); border-color: var(--red); color: #fff; animation: renew-pulse 2.6s ease-in-out infinite; }
+.renew-pill--urgent i { color: #fff; }
+.renew-menu { min-width: 300px; }
+.renew-menu__head { margin-bottom: 6px; padding: 14px; border-radius: 12px; background: var(--roast-800); color: #fff; }
+.renew-menu__head span { display: block; font-size: 12.5px; color: var(--roast-muted); }
+.renew-menu__head strong { display: block; margin-top: 2px; font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+.renew-menu__head small { display: block; font-size: 12.5px; color: var(--roast-muted); }
+.renew-menu__head .renew__meter { background: rgba(255, 255, 255, .12); }
+.renew-menu__head--soon .renew__meter span { background: var(--amber); }
+.renew-menu__head--urgent .renew__meter span { background: var(--red); }
+@media (max-width: 575.98px) { .renew-pill__text { display: none; } .renew-pill { width: 42px; justify-content: center; padding: 0; } }
+@media (prefers-reduced-motion: reduce) { .renew--urgent, .renew-pill--urgent { animation: none; } }

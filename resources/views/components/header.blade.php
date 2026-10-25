@@ -61,6 +61,24 @@
             </div>
 
             @if ($isAdminNav)
+                @php $renew = \App\Support\CloudReminder::info(); @endphp
+                <div class="dropdown">
+                    <button type="button" class="renew-pill renew-pill--{{ $renew['level'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                        aria-label="Perpanjangan server: {{ $renew['label'] }} lagi" title="Perpanjangan cloud server">
+                        <i class="fas fa-server"></i>
+                        <span class="renew-pill__text">{{ $renew['label'] }}</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right menu-x renew-menu">
+                        <div class="renew-menu__head renew-menu__head--{{ $renew['level'] }}">
+                            <span>Perpanjangan cloud server</span>
+                            <strong>{{ $renew['days'] === 0 ? 'Jatuh tempo hari ini' : $renew['days'] . ' hari lagi' }}</strong>
+                            <small>{{ $renew['due']->translatedFormat('l, d F Y') }} · Rp {{ number_format($renew['amount'], 0, ',', '.') }}/tahun</small>
+                            <div class="renew__meter"><span style="width: {{ $renew['progress'] }}%"></span></div>
+                        </div>
+                        <a class="dropdown-item" href="{{ route('expenses.create', ['category' => 'listrik_air']) }}"><span class="menu-x__ic"><i class="fas fa-check"></i></span><span><b>Sudah bayar? Catat</b><small>Masuk ke Pengeluaran</small></span></a>
+                    </div>
+                </div>
+
                 <div class="dropdown">
                     <button type="button" class="icon-btn icon-btn--red" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Buat baru" title="Buat baru">
                         <i class="fas fa-plus"></i>

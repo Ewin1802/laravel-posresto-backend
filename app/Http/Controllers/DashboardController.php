@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Support\CloudReminder;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -147,18 +148,9 @@ class DashboardController extends Controller
         ];
     }
 
-    /** Pengingat perpanjangan cloud server tiap 23 Januari. */
+    /** Pengingat perpanjangan cloud server (pengaturan di App\Support\CloudReminder). */
     private function cloudReminder(): array
     {
-        $now = Carbon::now()->startOfDay();
-        $due = Carbon::create($now->year, 1, 23)->startOfDay();
-        if ($due->lessThan($now)) {
-            $due->addYear();
-        }
-
-        return [
-            'due' => $due,
-            'days' => $now->diffInDays($due),
-        ];
+        return CloudReminder::info();
     }
 }

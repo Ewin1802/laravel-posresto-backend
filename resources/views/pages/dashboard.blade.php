@@ -35,6 +35,8 @@
 
     @include('layouts.alert')
 
+    @include('pages.partials.cloud-reminder')
+
     @if ($isAdmin)
         @php
             $dDay = $pct($today['net'], $yesterday['net']);
@@ -289,13 +291,6 @@
                         </div>
                     </div>
                 </div>
-                @include('pages.partials.cloud-reminder')
-            </div>
-        </div>
-    @else
-        <div class="row">
-            <div class="col-lg-8">
-                @include('pages.partials.cloud-reminder')
             </div>
         </div>
     @endif
