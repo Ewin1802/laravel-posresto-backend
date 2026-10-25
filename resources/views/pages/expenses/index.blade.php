@@ -17,6 +17,7 @@
             <p class="page-head__lead">Semua uang keluar untuk operasional cafe, {{ $rangeLabel }}. Dipakai sebagai pembanding di Analisa keuangan.</p>
         </div>
         <div class="page-head__actions">
+            <button type="button" class="btn btn-light" data-guide-open="expenses" data-guide-auto="arch.guide.expenses"><i class="fas fa-book-open"></i> Panduan</button>
             <a href="{{ route('financial.report', ['start_date' => $start_date, 'end_date' => $end_date]) }}" class="btn btn-light"><i class="fas fa-chart-line"></i> Analisa keuangan</a>
             <a href="{{ route('expenses.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Catat pengeluaran</a>
         </div>
@@ -90,7 +91,10 @@
                         <h3>{{ $category || $search ? 'Tidak ada yang cocok' : 'Belum ada pengeluaran' }}</h3>
                         <p>{{ $category || $search ? 'Coba kata kunci atau kategori lain.' : 'Catat belanja bahan, gaji, listrik, dan biaya lain agar laba bisa dihitung.' }}</p>
                         @unless ($category || $search)
-                            <a href="{{ route('expenses.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Catat pengeluaran</a>
+                            <div class="d-flex justify-content-center flex-wrap" style="gap:10px">
+                                <button type="button" class="btn btn-light" data-guide-open="expenses"><i class="fas fa-book-open"></i> Baca panduan</button>
+                                <a href="{{ route('expenses.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Catat pengeluaran</a>
+                            </div>
                         @endunless
                     </div>
                 @else
@@ -171,3 +175,5 @@
         </div>
     </div>
 @endsection
+
+@include('pages.expenses._guide')

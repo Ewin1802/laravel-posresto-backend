@@ -11,6 +11,9 @@
             <h1 class="page-head__title">Catat pengeluaran</h1>
             <p class="page-head__lead">Gunakan "Simpan & catat lagi" bila ada beberapa nota sekaligus.</p>
         </div>
+        <div class="page-head__actions">
+            <button type="button" class="btn btn-light" data-guide-open="expenses"><i class="fas fa-book-open"></i> Panduan</button>
+        </div>
     </div>
 
     @include('layouts.alert')
@@ -25,3 +28,5 @@
         </div>
     </form>
 @endsection
+
+@include('pages.expenses._guide')

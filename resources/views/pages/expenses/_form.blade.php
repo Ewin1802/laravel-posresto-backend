@@ -11,12 +11,16 @@
     <div class="cat-grid" role="radiogroup" aria-label="Kategori pengeluaran">
         @foreach ($categories as $key => $c)
             <label class="cat-tile">
-                <input type="radio" name="category" value="{{ $key }}" @checked($catNow === $key) required>
+                <input type="radio" name="category" value="{{ $key }}" data-hint="{{ $c['hint'] }}" @checked($catNow === $key) required>
                 <span><i class="fas {{ $c['icon'] }}"></i>{{ $c['label'] }}</span>
             </label>
         @endforeach
     </div>
     @error('category') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+    <div class="cat-hint" aria-live="polite">
+        <i class="fas fa-lightbulb"></i>
+        <span><b data-cat-label>{{ $categories[$catNow]["label"] ?? "" }}</b>. <span data-cat-hint>{{ $categories[$catNow]['hint'] ?? '' }}</span></span>
+    </div>
 </div>
 
 <div class="form-section">
@@ -63,6 +67,10 @@
     <script>
         $(function () {
             $('[data-date]').on('click', function () { $('#expense_date').val($(this).data('date')); });
+            $('input[name="category"]').on('change', function () {
+                $('[data-cat-hint]').text($(this).data('hint'));
+                $('[data-cat-label]').text($.trim($(this).next('span').text()));
+            });
         });
     </script>
 @endpush

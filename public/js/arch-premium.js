@@ -236,6 +236,34 @@
             });
         }
 
+        /* Panduan (panel samping): [data-guide-open="nama"] membuka #guide-nama */
+        var guideLast = null;
+        var openGuide = function (name) {
+            var $g = $('#guide-' + name);
+            if (!$g.length) return;
+            guideLast = document.activeElement;
+            $g.prop('hidden', false);
+            $('body').css('overflow', 'hidden');
+            requestAnimationFrame(function () { $g.addClass('is-open'); $g.find('.guide__close').trigger('focus'); });
+        };
+        var closeGuide = function ($g) {
+            if (!$g.length || $g.prop('hidden')) return;
+            $g.removeClass('is-open');
+            $('body').css('overflow', '');
+            setTimeout(function () { $g.prop('hidden', true); }, 380);
+            if (guideLast && guideLast.focus) guideLast.focus();
+        };
+        $(document).on('click', '[data-guide-open]', function (e) { e.preventDefault(); openGuide($(this).data('guide-open')); });
+        $(document).on('click', '[data-guide-close]', function () { closeGuide($(this).closest('.guide')); });
+        $(document).on('keydown', function (e) { if (e.key === 'Escape') closeGuide($('.guide.is-open')); });
+        // Tampil otomatis sekali per perangkat
+        $('[data-guide-auto]').each(function () {
+            var key = $(this).data('guide-auto'), name = $(this).data('guide-open');
+            var seen = null;
+            try { seen = localStorage.getItem(key); localStorage.setItem(key, '1'); } catch (e) { seen = '1'; }
+            if (!seen) setTimeout(function () { openGuide(name); }, 500);
+        });
+
         /* Bootstrap tooltips if available */
         if ($.fn.tooltip) { $('[data-toggle="tooltip"]').tooltip(); }
     });
